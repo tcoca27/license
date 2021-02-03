@@ -1,0 +1,79 @@
+//headline font sizes
+$headlineFontSize1: 36px !default;
+$headlineFontSize2: 30px !default;
+$headlineFontSize3: 24px !default;
+$headlineFontSize4: 21px !default;
+$headlineFontSize5: 18px !default;
+$subheaderFontSize: 16px !default;
+
+// headlines line height
+$headlineLineHeight1: 48px !default;
+$headlineLineHeight2: 44px !default;
+$headlineLineHeight3: 36px !default;
+$headlineLineHeight4: 32px !default;
+$headlineLineHeight5: 28px !default;
+$subheaderLineHeight: 24px !default;
+
+//copy font sizes
+$textFontSize1: 16px !default;
+$textFontSize2: 14px !default;
+$textFontSizeSmall: 12px !default;
+
+// copy line height
+$textLineHeight1: 24px !default;
+$textLineHeight2: 21px !default;
+$textLineHeightSmall: 18px !default;
+
+//defaults
+$defaultFontSize: $textFontSize1 !default;
+$defaultLineHeight: lineHeight($textLineHeight1, $textFontSize1) !default;
+$defaultFontFamily: Titillium-Regular !default;
+
+/***************
+    COLORS
+***************/
+// primary colors
+$color-green1: #84BD00 !default;
+$color-green2: #ABBF00 !default;
+$color-green3: #73C531 !default;
+$color-green4: #549024 !default;
+$color-green5: #3E691B !default;
+$color-green6: #274211 !default;
+$color-green7: #7DC200 !default;
+$color-green8: #84BD01 !default;
+$color-petrol: #00546B !default;
+$color-petrol-dark: #003F4E !default;
+$color-petrol-light: #008A7D !default;
+$color-cyan: #00A0CA !default;
+$color-magenta: #D71085 !default;
+$color-social-media: #FFD100 !default;
+$color-font-green: #22372B !default;
+
+// additional colors
+$color-black: #000 !default;
+$color-grey1: #292929 !default;
+$color-grey2: #4A4A4A !default;
+$color-grey3: #747474 !default;
+$color-grey4: #A4A4A4 !default;
+$color-grey5: #BCBCBC !default;
+$color-grey6: #DCDCDC !default;
+$color-grey7: #E5E5E5 !default;
+$color-grey8: #EDEDED !default;
+$color-grey9: #F5F5F5 !default;
+$color-white: #FFF !default;
+$color-red1: #D90000 !default;
+$color-red2: #FFE5E5 !default;
+$color-red3: #EA726D !default;
+$color-red4: #EB5757 !default;
+
+// quintile colors
+$color-quintile1: $color-red1 !default;
+$color-quintile2: #E87800 !default;
+$color-quintile3: #FECB00 !default;
+$color-quintile4: $color-green1 !default;
+$color-quintile5: $color-green4 !default;
+
+// functional colors
+$color-text-default: $color-grey1 !default;
+$color-negative: $color-red1 !default;
+$color-positive: $color-green4 !default;

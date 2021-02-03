@@ -1,0 +1,66 @@
+/* You can add global styles to this file, and also import other style files */
+@import "assets/scss/principles/varaibles";
+* {
+  font-family: Gadugi, serif;
+}
+
+.center {
+  margin: auto;
+  width: 50%;
+  text-align: center;
+}
+
+button {
+  background-color: $color-cyan;
+  border: none;
+  color: white;
+  padding: 16px 32px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+input[type=text], input[type=email], input[type=password], select {
+  width: 70%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.form-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+form {
+  height: 350px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.form-error {
+  border: 2px solid $color-red1 !important;
+}
+
+.alert {
+  color: $color-red1;
+}
+
+.alert-success {
+  color: $color-green1;
+}
+
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+  width: 40%;
+  padding: 30px;
+  &:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+  }
+}
+

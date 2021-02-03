@@ -1,0 +1,32 @@
+@import "src/assets/scss/principles/varaibles";
+.app {
+  width: 100%;
+  .navbar {
+    margin-bottom: 30px;
+    width: 100%;
+    background-color: $color-grey1;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between ;
+    .navbar-nav {
+      color: white;
+      list-style-type: none;
+      display: flex;
+      flex-direction: row;
+      .nav-item {
+        margin-right: 30px;
+        a {
+          display: block;
+          color: white;
+          text-align: center;
+          padding: 8px 6px;
+          text-decoration: none;
+          &:hover {
+            border-radius: 10px;
+            background-color: $color-cyan;
+          }
+        }
+      }
+    }
+  }
+}

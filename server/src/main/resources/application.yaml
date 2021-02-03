@@ -1,0 +1,31 @@
+spring:
+
+  allowed:
+    origins:
+      - https://localhost:3000
+      - http://localhost:3000
+  datasource:
+    url: jdbc:postgresql://localhost:5432/license
+    username: postgres
+    password: admin
+
+  liquibase:
+    enabled: false
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL9Dialect
+        jdbc:
+          lob:
+            non_contextual_creation: true
+  security:
+    ignored:
+      - "*.bundle.*"
+    user:
+      name: admin
+      password: password
+      roles: USER,ADMIN
+
