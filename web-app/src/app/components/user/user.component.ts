@@ -3,14 +3,13 @@ import { UserService } from '../../services/user.service';
 import { VideosService } from '../../services/videos.service';
 
 @Component({
-  selector: 'app-protected',
-  templateUrl: './protected.component.html',
-  styleUrls: ['./protected.component.scss']
+  selector: 'app-user',
+  templateUrl: './user.component.html',
+  styleUrls: ['./user.component.scss']
 })
-export class ProtectedComponent implements OnInit {
+export class UserComponent implements OnInit {
 
   public userContent: string;
-  public adminContent: string;
 
   public loading = false;
 
@@ -18,17 +17,10 @@ export class ProtectedComponent implements OnInit {
 
   public videos: File[] = [null];
 
-  constructor(private userService: UserService, private videosService: VideosService) { }
+  constructor(private userService: UserService, private videosService: VideosService) {
+  }
 
   ngOnInit(): void {
-    this.userService.getAdminContent().subscribe(
-      data => {
-        this.adminContent = data;
-      },
-      err => {
-        this.adminContent = JSON.parse(err.error).message;
-      }
-    );
     this.userService.getUserContent().subscribe(
       data => {
         this.userContent = data;
@@ -64,5 +56,4 @@ export class ProtectedComponent implements OnInit {
   onAddAnother(): void {
     this.videos.push(null);
   }
-
 }

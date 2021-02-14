@@ -1,4 +1,9 @@
 spring:
+  servlet:
+    multipart:
+      file-size-threshold: 2KB
+      max-file-size: 200MB
+      max-request-size: 215MB
 
   allowed:
     origins:
@@ -29,3 +34,13 @@ spring:
       password: password
       roles: USER,ADMIN
 
+file:
+  upload-dir: D:\Repos\licenta\videos
+
+license:
+  app:
+    jwtSecret: LicenseSecret
+    jwtExpirationMs: 8400000
+server:
+  tomcat:
+    max-swallow-size: 200MB

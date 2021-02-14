@@ -1,0 +1,11 @@
+<div class="card center">
+  <input class="form-control" type="file"
+         (change)="onChange($event, videos.indexOf(video))">
+  <button (click)="onUpload()"
+          class="btn btn-success">
+    Upload
+  </button>
+</div>
+<div class="container center" *ngIf="loading">
+  <h3>Loading ...</h3>
+</div>

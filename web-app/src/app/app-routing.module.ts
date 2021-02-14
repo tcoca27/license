@@ -5,6 +5,7 @@ import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { ProtectedComponent } from './components/protected/protected.component';
+import { UserComponent } from './components/user/user.component';
 
 const routes: Routes = [
   { path: 'home', component: HomeComponent },
@@ -12,6 +13,7 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'profile', component: ProfileComponent },
   { path: 'protected', component: ProtectedComponent },
+  { path: 'user', component: UserComponent },
   { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];
 

@@ -8,3 +8,22 @@
     <p>{{ adminContent }}</p>
   </header>
 </div>
+<div class="card center">
+  <div *ngFor="let video of videos" class="text-center">
+    <input class="form-control" type="file"
+           (change)="onChange($event, videos.indexOf(video))">
+  </div>
+</div>
+<div class="center">
+  <button (click)="onAddAnother()"
+          class="btn btn-success">
+    Add Another
+  </button>
+  <button (click)="onUpload()"
+          class="btn btn-success">
+    Upload
+  </button>
+</div>
+<div class="center" *ngIf="loading">
+  <h3>Loading ...</h3>
+</div>
