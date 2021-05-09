@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class VideoResponse {
 
+	public Long id;
 	public String filename;
 	public LocalDateTime createdDate;
 	public long size;

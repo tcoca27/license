@@ -1,0 +1,8 @@
+@import "src/assets/scss/principles/varaibles";
+
+.list-group-item {
+  a {
+    text-decoration: none;
+    color: $color-black
+  }
+}

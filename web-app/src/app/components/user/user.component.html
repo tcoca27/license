@@ -1,11 +1,26 @@
 <div class="card center">
-  <input class="form-control" type="file"
-         (change)="onChange($event, videos.indexOf(video))">
-  <button (click)="onUpload()"
-          class="btn btn-success">
-    Upload
-  </button>
-</div>
-<div class="container center" *ngIf="loading">
-  <h3>Loading ...</h3>
+  <div *ngFor="let progressInfo of progressInfos" class="mb-2">
+    <div class="form-item">
+      <span>{{ progressInfo.fileName }}</span>
+      <div class="progress">
+        {{ progressInfo.value }}
+      </div>
+    </div>
+  </div>
+
+  <div class="form-item">
+    <label class="btn btn-default">
+      <input type="file" (change)="selectFiles($event)"/>
+    </label>
+
+    <button
+      class="btn btn-success"
+      [disabled]="!selectedFiles"
+      (click)="uploadFiles()"
+    >
+      Upload
+    </button>
+  </div>
+
+  <div class="alert alert-light" role="alert">{{ message }}</div>
 </div>

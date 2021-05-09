@@ -16,6 +16,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,7 +45,7 @@ public class VideoController {
 		String filename = videoStorageService.storeVideo(video);
 		Video createdVideo = videoStorageService.getVideoByFilename(filename);
 
-		return new VideoResponse(filename, createdVideo.getCreatedDate(), createdVideo.getSize());
+		return new VideoResponse(createdVideo.getId(), filename, createdVideo.getCreatedDate(), createdVideo.getSize());
 	}
 
 	@PostMapping("/uploadVideos")
@@ -54,19 +58,23 @@ public class VideoController {
 	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	public VideoResponse getOne(@PathVariable Long id) {
 		Video video = videoStorageService.getVideo(id);
-		return new VideoResponse(video.getFileName(), video.getCreatedDate(), video.getSize());
+		return new VideoResponse(video.getId(), video.getFileName(), video.getCreatedDate(), video.getSize());
 	}
 
-	@GetMapping(value = "/{id}")
+	@GetMapping(value = "/{id}", produces = "video/mp4")
 	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-	public StreamingResponseBody stream(@PathVariable Long id)
+	public FileSystemResource stream(@PathVariable Long id)
 			throws FileNotFoundException {
-		String storedPath = videoStorageService.getVideo(id).getStoredPath();
+		Video video = videoStorageService.getVideo(id);
+		String storedPath = video.getStoredPath();
 		File videoFile = new File(storedPath);
-		final InputStream videoFileStream = new FileInputStream(videoFile);
-		return (os) -> {
-			readAndWrite(videoFileStream, os);
-		};
+		return new FileSystemResource(videoFile);
+	}
+
+	@GetMapping(value = "")
+	@PreAuthorize("hasRole('ADMIN')")
+	public List<VideoResponse> getAll() {
+		return videoStorageService.getVideos().stream().map(video -> new VideoResponse(video.getId(), video.getFileName(), video.getCreatedDate(), video.getSize())).collect(Collectors.toList());
 	}
 
 	private void readAndWrite(final InputStream is, OutputStream os)

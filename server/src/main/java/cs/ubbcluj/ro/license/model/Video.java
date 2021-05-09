@@ -40,5 +40,6 @@ public class Video {
 		fileName = originalFilename;
 		storedPath = targetLocation.toString();
 		this.size = size;
+		createdDate = LocalDateTime.now();
 	}
 }

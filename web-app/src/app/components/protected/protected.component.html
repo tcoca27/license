@@ -1,29 +1,45 @@
 <div class="card center">
-  <header>
-    <p>{{ userContent }}</p>
-  </header>
-</div>
-<div class="card center">
-  <header>
-    <p>{{ adminContent }}</p>
-  </header>
-</div>
-<div class="card center">
-  <div *ngFor="let video of videos" class="text-center">
-    <input class="form-control" type="file"
-           (change)="onChange($event, videos.indexOf(video))">
+  <div *ngFor="let progressInfo of progressInfos" class="mb-2">
+    <div class="form-item">
+      <span>{{ progressInfo.fileName }}</span>
+      <div class="progress">
+        {{ progressInfo.value }}
+      </div>
+    </div>
   </div>
-</div>
-<div class="center">
-  <button (click)="onAddAnother()"
-          class="btn btn-success">
-    Add Another
-  </button>
-  <button (click)="onUpload()"
-          class="btn btn-success">
+
+  <label class="btn btn-default">
+    <input type="file" multiple (change)="selectFiles($event)"/>
+  </label>
+
+  <button
+    class="btn btn-success"
+    [disabled]="!selectedFiles"
+    (click)="uploadFiles()"
+  >
     Upload
   </button>
+
+  <div class="alert alert-light" role="alert">{{ message }}</div>
+
+  <div class="card-header">List of Files</div>
+  <ul
+    class="list-group list-group-flush"
+    *ngFor="let file of fileInfos | async"
+  >
+    <li class="list-group-item">
+      <a href="javascript:;" (click)="showVideo(file.id)"> {{file.filename}} </a>
+    </li>
+  </ul>
 </div>
-<div class="center" *ngIf="loading">
-  <h3>Loading ...</h3>
+<div *ngIf="videoDetail && videoSource" class="card center">
+  <header>{{videoDetail.filename}}</header>
+  <div class="form-item">
+    <p>Upload Date: {{videoDetail.createdDate | date:'short'}}</p>
+    <p>Size: {{videoDetail.size/1000000}} MB</p>
+  </div>
+
+  <video style="max-width: 100%" controls>
+    <source [src]="videoSource" type="video/mp4">
+  </video>
 </div>

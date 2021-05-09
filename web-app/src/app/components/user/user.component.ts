@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../services/user.service';
 import { VideosService } from '../../services/videos.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-user',
@@ -9,51 +10,40 @@ import { VideosService } from '../../services/videos.service';
 })
 export class UserComponent implements OnInit {
 
-  public userContent: string;
+  public selectedFiles: FileList;
+  public progressInfos = [];
+  public message = '';
 
-  public loading = false;
-
-  public video: File = null;
-
-  public videos: File[] = [null];
 
   constructor(private userService: UserService, private videosService: VideosService) {
   }
 
   ngOnInit(): void {
-    this.userService.getUserContent().subscribe(
-      data => {
-        this.userContent = data;
+  }
+
+  public selectFiles(event): void {
+    this.progressInfos = [];
+    this.selectedFiles = event.target.files;
+  }
+
+  public uploadFiles(): void {
+    this.message = '';
+
+    for (let i = 0; i < this.selectedFiles.length; i++) {
+      this.upload(i, this.selectedFiles[i]);
+    }
+  }
+
+  upload(idx, file): void {
+    this.progressInfos[idx] = { value: 'Uploading', fileName: file.name };
+
+    this.videosService.uploadVideo(file).subscribe(
+      () => {
+        this.progressInfos[idx].value = 'Done';
       },
       err => {
-        this.userContent = JSON.parse(err.error).message;
-      }
-    );
-  }
-
-  public onChange(event, index: number): void {
-    console.log(index);
-    console.log(event);
-    this.video = event.target.files[0];
-    this.videos[index] = this.video;
-    console.log(this.videos);
-  }
-
-  onUpload(): void {
-    if (!this.videos[0]) {
-      return;
-    }
-    this.loading = true;
-    this.videosService.uploadVideo(this.videos[0]).subscribe(
-      (event: any) => {
-        if (typeof (event) === 'object') {
-          this.loading = false;
-        }
-      }
-    );
-  }
-
-  onAddAnother(): void {
-    this.videos.push(null);
+        this.progressInfos[idx].value = 'Error Uploading';
+        this.message = 'Could not upload the file:' + file.name;
+      });
   }
 }
