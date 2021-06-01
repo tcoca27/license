@@ -36,56 +36,63 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class VideoController {
 
-	@Autowired
-	private VideoStorageService videoStorageService;
+  @Autowired
+  private VideoStorageService videoStorageService;
 
-	@PostMapping(value = "/uploadVideo", consumes = MULTIPART_FORM_DATA)
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-	public VideoResponse uploadVideo(@RequestParam("video") MultipartFile video) {
-		String filename = videoStorageService.storeVideo(video);
-		Video createdVideo = videoStorageService.getVideoByFilename(filename);
+  @PostMapping(value = "/uploadVideo", consumes = MULTIPART_FORM_DATA)
+  @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+  public VideoResponse uploadVideo(@RequestParam("video") MultipartFile video,
+      @RequestParam("attColor") String[] attColor, @RequestParam("defColor") String[] defColor) {
+    System.out.println(attColor[0]);
+    String filename = videoStorageService.storeVideo(video);
+    Video createdVideo = videoStorageService.getVideoByFilename(filename);
+    return VideoResponse.builder().id(createdVideo.getId()).filename(filename)
+        .createdDate(createdVideo.getCreatedDate()).size(createdVideo.getSize()).build();
+  }
 
-		return new VideoResponse(createdVideo.getId(), filename, createdVideo.getCreatedDate(), createdVideo.getSize());
-	}
+  @PostMapping("/uploadVideos")
+  @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+  public List<VideoResponse> uploadMultipleVideos(@RequestParam("videos") MultipartFile[] videos,
+      @RequestParam("attColor") String[] attColor, @RequestParam("defColor") String[] defColor) {
+    return Arrays.asList(videos).stream().map(video -> uploadVideo(video, attColor, defColor))
+        .collect(Collectors.toList());
+  }
 
-	@PostMapping("/uploadVideos")
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-	public List<VideoResponse> uploadMultipleVideos(@RequestParam("videos")MultipartFile[] videos) {
-		return Arrays.asList(videos).stream().map(video -> uploadVideo(video)).collect(Collectors.toList());
-	}
+  @GetMapping("info/{id}")
+  @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+  public VideoResponse getOne(@PathVariable Long id) {
+    Video video = videoStorageService.getVideo(id);
+    return VideoResponse.builder().id(video.getId()).filename(video.getFileName())
+        .createdDate(video.getCreatedDate()).size(video.getSize()).build();
+  }
 
-	@GetMapping("info/{id}")
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-	public VideoResponse getOne(@PathVariable Long id) {
-		Video video = videoStorageService.getVideo(id);
-		return new VideoResponse(video.getId(), video.getFileName(), video.getCreatedDate(), video.getSize());
-	}
+  @GetMapping(value = "/{id}", produces = "video/mp4")
+  @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+  public FileSystemResource stream(@PathVariable Long id)
+      throws FileNotFoundException {
+    Video video = videoStorageService.getVideo(id);
+    String storedPath = video.getStoredPath();
+    File videoFile = new File(storedPath);
+    return new FileSystemResource(videoFile);
+  }
 
-	@GetMapping(value = "/{id}", produces = "video/mp4")
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-	public FileSystemResource stream(@PathVariable Long id)
-			throws FileNotFoundException {
-		Video video = videoStorageService.getVideo(id);
-		String storedPath = video.getStoredPath();
-		File videoFile = new File(storedPath);
-		return new FileSystemResource(videoFile);
-	}
+  @GetMapping(value = "")
+  @PreAuthorize("hasRole('ADMIN')")
+  public List<VideoResponse> getAll() {
+    return videoStorageService.getVideos().stream().map(
+        video -> new VideoResponse(video.getId(), video.getFileName(), video.getCreatedDate(),
+            video.getSize())).collect(Collectors.toList());
+  }
 
-	@GetMapping(value = "")
-	@PreAuthorize("hasRole('ADMIN')")
-	public List<VideoResponse> getAll() {
-		return videoStorageService.getVideos().stream().map(video -> new VideoResponse(video.getId(), video.getFileName(), video.getCreatedDate(), video.getSize())).collect(Collectors.toList());
-	}
-
-	private void readAndWrite(final InputStream is, OutputStream os)
-			throws IOException {
-		byte[] data = new byte[2048];
-		int read = 0;
-		while ((read = is.read(data)) > 0) {
-			os.write(data, 0, read);
-		}
-		os.flush();
-	}
+  private void readAndWrite(final InputStream is, OutputStream os)
+      throws IOException {
+    byte[] data = new byte[2048];
+    int read = 0;
+    while ((read = is.read(data)) > 0) {
+      os.write(data, 0, read);
+    }
+    os.flush();
+  }
 
 
 }

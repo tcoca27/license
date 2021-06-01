@@ -1,45 +1,70 @@
-<div class="card center">
-  <div *ngFor="let progressInfo of progressInfos" class="mb-2">
-    <div class="form-item">
-      <span>{{ progressInfo.fileName }}</span>
-      <div class="progress">
-        {{ progressInfo.value }}
+<div>
+  <div class="card center">
+    <h1>Analyze a play</h1>
+    <div *ngFor="let progressInfo of progressInfos" class="mb-2">
+      <div class="form-item">
+        <span>{{ progressInfo.fileName }}</span>
+        <div class="progress">
+          {{ progressInfo.value }}
+        </div>
       </div>
     </div>
+
+    <div class="form-item-field">
+      <p class="float-left">Select video file:</p>
+      <label class="float-left-flex">
+        <input type="file" (change)="selectFiles($event)"/>
+      </label>
+    </div>
+
+    <div class="form-item-field">
+      <p>Please select attacking team's color:</p>
+      <input class="float-left-flex" [value]="attColor"
+             [style.background]="attColor"
+             [(colorPicker)]="attColor"
+             (colorPickerChange)="attColorChange($event)"
+             [cpOutputFormat]="'hsla'"/>
+    </div>
+
+    <div class="form-item-field">
+      <p>Please select defending team's color:</p>
+      <input class="float-left-flex mr-3" [value]="defColor"
+             [style.background]="defColor"
+             [(colorPicker)]="defColor"
+             (colorPickerChange)="defColorChange($event)"
+             [cpOutputFormat]="'hsla'"/>
+    </div>
+
+    <button
+      class="float-right btn btn-success"
+      [disabled]="!selectedFiles"
+      (click)="uploadFiles()"
+    >
+      Upload
+    </button>
+
+    <div class="alert alert-light" role="alert">{{ message }}</div>
   </div>
-
-  <label class="btn btn-default">
-    <input type="file" multiple (change)="selectFiles($event)"/>
-  </label>
-
-  <button
-    class="btn btn-success"
-    [disabled]="!selectedFiles"
-    (click)="uploadFiles()"
-  >
-    Upload
-  </button>
-
-  <div class="alert alert-light" role="alert">{{ message }}</div>
-
-  <div class="card-header">List of Files</div>
-  <ul
-    class="list-group list-group-flush"
-    *ngFor="let file of fileInfos | async"
-  >
-    <li class="list-group-item">
-      <a href="javascript:;" (click)="showVideo(file.id)"> {{file.filename}} </a>
-    </li>
-  </ul>
-</div>
-<div *ngIf="videoDetail && videoSource" class="card center">
-  <header>{{videoDetail.filename}}</header>
-  <div class="form-item">
-    <p>Upload Date: {{videoDetail.createdDate | date:'short'}}</p>
-    <p>Size: {{videoDetail.size/1000000}} MB</p>
+  <div class="card center">
+    <div class="card-header">List of Files</div>
+    <ul
+      class="list-group list-group-flush"
+      *ngFor="let file of fileInfos | async"
+    >
+      <li class="list-group-item">
+        <a href="javascript:;" (click)="showVideo(file.id)"> {{file.filename}} </a>
+      </li>
+    </ul>
   </div>
+  <div *ngIf="videoDetail && videoSource" class="card center">
+    <header>{{videoDetail.filename}}</header>
+    <div class="form-item">
+      <p>Upload Date: {{videoDetail.createdDate | date:'short'}}</p>
+      <p>Size: {{videoDetail.size / 1000000}} MB</p>
+    </div>
 
-  <video style="max-width: 100%" controls>
-    <source [src]="videoSource" type="video/mp4">
-  </video>
+    <video style="max-width: 100%" controls>
+      <source [src]="videoSource" type="video/mp4">
+    </video>
+  </div>
 </div>

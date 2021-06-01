@@ -1,13 +1,15 @@
 package cs.ubbcluj.ro.license.payload.response;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
 
+@Builder
 @Data
 public class JwtResponse {
     private String token;
-    private String type = "Bearer";
+    private final String type = "Bearer";
     private Long id;
     private String username;
     private String email;

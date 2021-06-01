@@ -17,10 +17,12 @@ export class VideosService {
     return this.http.get(ENDPOINT.VIDEOS_API.GET_VIDEOS);
   }
 
-  public uploadVideo(videoToUpload): Observable<any> {
+  public uploadVideo(videoToUpload, attColor, defColor): Observable<any> {
     const formData = new FormData();
 
     formData.append('video', videoToUpload);
+    formData.append('attColor', attColor);
+    formData.append('defColor', defColor);
 
     return this.http.post(ENDPOINT.VIDEOS_API.UPLOAD_ONE, formData, {
       reportProgress: true,

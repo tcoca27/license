@@ -1,4 +1,5 @@
 <div class="card center">
+  <h1 >Analyze a play</h1>
   <div *ngFor="let progressInfo of progressInfos" class="mb-2">
     <div class="form-item">
       <span>{{ progressInfo.fileName }}</span>
@@ -8,19 +9,37 @@
     </div>
   </div>
 
-  <div class="form-item">
-    <label class="btn btn-default">
+  <div class="form-item-field">
+    <p class="float-left">Select video file:</p>
+    <label class="float-left-flex">
       <input type="file" (change)="selectFiles($event)"/>
     </label>
-
-    <button
-      class="btn btn-success"
-      [disabled]="!selectedFiles"
-      (click)="uploadFiles()"
-    >
-      Upload
-    </button>
   </div>
+
+  <div class="form-item-field">
+    <p>Please select attacking team's color:</p>
+    <input class="float-left-flex" [value]="attColor"
+           [style.background]="attColor"
+           [(colorPicker)]="attColor"
+           (colorPickerChange)="attColorChange($event)"
+           [cpOutputFormat]="'hsla'"/>
+  </div>
+
+  <div class="form-item-field">
+    <p>Please select defending team's color:</p>
+    <input class="float-left-flex mr-3" [value]="defColor"
+           [style.background]="defColor"
+           [(colorPicker)]="defColor"
+           (colorPickerChange)="defColorChange($event)"
+           [cpOutputFormat]="'hsla'"/>
+  </div>
+
+  <button
+    class="float-right btn btn-success"
+    (click)="uploadFiles()"
+  >
+    Upload
+  </button>
 
   <div class="alert alert-light" role="alert">{{ message }}</div>
 </div>

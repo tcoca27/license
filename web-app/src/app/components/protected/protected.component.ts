@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import DateTimeFormat = Intl.DateTimeFormat;
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { UserComponent } from '../user/user.component';
 
 @Component({
   selector: 'app-protected',
@@ -20,6 +21,8 @@ export class ProtectedComponent implements OnInit {
   public progressInfos = [];
   public message = '';
   public videoDetail = null;
+  public attColor: string;
+  public defColor: string;
 
   public fileInfos: Observable<any>;
 
@@ -41,16 +44,15 @@ export class ProtectedComponent implements OnInit {
     this.message = '';
 
     for (let i = 0; i < this.selectedFiles.length; i++) {
-      this.upload(i, this.selectedFiles[i]);
+      this.upload(i, this.selectedFiles[i], UserComponent.getHSL(this.attColor), UserComponent.getHSL(this.defColor));
     }
   }
 
-  upload(idx, file): void {
+  upload(idx, file, attColor, defColor): void {
     this.progressInfos[idx] = { value: 'Uploading', fileName: file.name };
 
-    this.videosService.uploadVideo(file).subscribe(
+    this.videosService.uploadVideo(file, attColor, defColor).subscribe(
       () => {
-        this.fileInfos = this.videosService.getVideos();
         this.progressInfos[idx].value = 'Done';
       },
       err => {

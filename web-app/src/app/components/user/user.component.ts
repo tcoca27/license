@@ -10,12 +10,22 @@ import { Observable } from 'rxjs';
 })
 export class UserComponent implements OnInit {
 
+  constructor(private userService: UserService, private videosService: VideosService) {
+  }
+
   public selectedFiles: FileList;
   public progressInfos = [];
   public message = '';
+  public attColor: string;
+  public defColor: string;
 
-
-  constructor(private userService: UserService, private videosService: VideosService) {
+  static getHSL(color: string): string[] {
+    const colors: string = color.split('(')[1];
+    const tokens = colors.split(',');
+    const h = tokens[0];
+    const s = tokens[1].split('%')[0];
+    const l = tokens[2].split('%')[0];
+    return [h, s, l];
   }
 
   ngOnInit(): void {
@@ -29,15 +39,21 @@ export class UserComponent implements OnInit {
   public uploadFiles(): void {
     this.message = '';
 
+    console.log('here');
+    if (!this.selectedFiles || !this.defColor || !this.attColor) {
+      this.message = 'Please fill in all the fields.';
+      return;
+    }
+
     for (let i = 0; i < this.selectedFiles.length; i++) {
-      this.upload(i, this.selectedFiles[i]);
+      this.upload(i, this.selectedFiles[i], UserComponent.getHSL(this.attColor), UserComponent.getHSL(this.defColor));
     }
   }
 
-  upload(idx, file): void {
+  public upload(idx, file, attColor, defColor): void {
     this.progressInfos[idx] = { value: 'Uploading', fileName: file.name };
 
-    this.videosService.uploadVideo(file).subscribe(
+    this.videosService.uploadVideo(file, attColor, defColor).subscribe(
       () => {
         this.progressInfos[idx].value = 'Done';
       },
@@ -45,5 +61,13 @@ export class UserComponent implements OnInit {
         this.progressInfos[idx].value = 'Error Uploading';
         this.message = 'Could not upload the file:' + file.name;
       });
+  }
+
+  public attColorChange(color: string): void {
+    this.attColor = color;
+  }
+
+  public defColorChange(color: string): void {
+    this.defColor = color;
   }
 }

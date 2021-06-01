@@ -12,6 +12,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { ProtectedComponent } from './components/protected/protected.component';
 import { authInterceptorProviders } from './helpers/auth.interceptor';
 import { UserComponent } from './components/user/user.component';
+import { ColorPickerModule } from 'ngx-color-picker';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { UserComponent } from './components/user/user.component';
     AppRoutingModule,
     FormsModule,
     HttpClientModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ColorPickerModule
   ],
   providers: [authInterceptorProviders],
   bootstrap: [AppComponent]

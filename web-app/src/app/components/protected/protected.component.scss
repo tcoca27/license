@@ -6,3 +6,25 @@
     color: $color-black
   }
 }
+
+.float-left {
+  text-align: left;
+}
+
+.form-item-field {
+  display: flex;
+  margin-top: 15px;
+  max-height: 40px;
+}
+
+.float-left-flex {
+  margin: 15px 0 0 20px;
+}
+
+.mr-3 {
+  margin-left: 13px;
+}
+
+.float-right {
+  margin-top: 15px;
+}
