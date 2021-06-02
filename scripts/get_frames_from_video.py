@@ -20,7 +20,7 @@ while (cap.isOpened()):
     if ret == False:
         break
     if i % save_frame == 0:
-        cv2.imwrite(path_to_save + '/' + video[:-4] + str(i) + '.jpg', frame)
+        cv2.imwrite(path_to_save + '/' + video.split('\\')[-1][:-4] + str(i).zfill(3) + '.jpg', frame)
     i += 1
 
 cap.release()
