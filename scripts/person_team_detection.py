@@ -24,9 +24,17 @@ ap.add_argument("-m", "--mask-rcnn", required=True, help="base path to mask-rcnn
 ap.add_argument("-v", "--visualize", type=int, default=0, help="whether or not we are going to visualize each instance")
 ap.add_argument("-c", "--confidence", type=float, default=0.5, help="minimum probability to filter weak detections")
 ap.add_argument("-t", "--threshold", type=float, default=0.3, help="minimum threshold for pixel-wise mask segmentation")
-ap.add_argument("-a", "--att", required=True, type=float, default=0, help="h of attacking color")
-ap.add_argument("-d", "--def", required=True, type=float, default=0, help="h od defending color")
+ap.add_argument("-a", "--att", required=True, type=str, default=0, help="h of attacking color")
+ap.add_argument("-d", "--def", required=True, type=str, default=0, help="h od defending color")
 args = vars(ap.parse_args())
+
+
+#TODO: better define these
+color_bounds = {'red': [[128, 0, 0], [255, 80, 80]], 'blue': [[0, 0, 128], [80, 120, 255]],
+                'dark_blue': [[0, 0, 55], [60, 90, 128]], 'purple': [[0, 0, 55], [75, 100, 128]],
+                'white': [[150, 150, 150], [255, 255, 255]], 'green' :[[0, 128, 0], [160, 255, 160]],
+                'black': [[1, 1, 1], [64, 64, 64]], 'yellow': [[120,120,0], [255,255,180]], 'gray': [[64,64,64], [150, 150, 150]]
+                }
 
 # load the COCO class labels our Mask R-CNN was trained on
 labelsPath = os.path.sep.join([args["mask_rcnn"], "object_detection_classes_coco.txt"])
@@ -100,7 +108,18 @@ def get_dominant_colors_for_court(img, k=3):
     return res
 
 
-def mask_player(img, color, tol=10):
+def mask_player(img, color):
+    if color == 'yellow':
+        return mask_court(img, 60)
+    rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    lower_bound = np.array(color_bounds[color][0], np.uint8)
+    upper_bound = np.array(color_bounds[color][1], np.uint8)
+
+    mask = cv2.inRange(rgb_img, lower_bound, upper_bound)
+
+    return mask
+
+def mask_court(img, color, tol=10):
     hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
     tub = (color - tol) / 2
@@ -113,19 +132,6 @@ def mask_player(img, color, tol=10):
     lower_bound = np.array([tlb, 255, 255], np.uint8)
 
     mask = cv2.inRange(hsv_img, upper_bound, lower_bound)
-
-    # # Bitwise-AND mask and original image
-    # res = cv2.bitwise_and(img, img, mask=mask)
-
-    # Show original image
-    # plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
-    # plt.title('Original Image')
-    # plt.show()
-
-    # Show masked image
-    # plt.imshow(mask)
-    # plt.title('Mask')
-    # plt.show()
 
     return mask
 
@@ -143,7 +149,6 @@ for img_path in images_path:
     if court_color is None:
         dominant_colors = get_dominant_colors_for_court(image, 3)
         court_color = get_hue_closest_color_to_input(dominant_colors)
-        # attColor = get_hue_closest_color_to_input(dominant_colors, )
         print(court_color)
 
     # construct a blob from the input image and then perform a forward
@@ -215,42 +220,44 @@ for img_path in images_path:
                 instance = instance[int(h / 4):int(2 * h / 3), ]
                 att_mask = mask_player(instance, attColor)
                 def_mask = mask_player(instance, defColor)
-                court_mask = mask_player(instance, court_color, 5)
+                court_mask = mask_court(instance, court_color, 10)
 
                 att_mask -= cv2.bitwise_and(court_mask, att_mask)
                 def_mask -= cv2.bitwise_and(court_mask, def_mask)
-                att_comp = find_connected_components(att_mask)
-                def_comp = find_connected_components(def_mask)
+                att_comp = cv2.countNonZero(att_mask)
+                def_comp = cv2.countNonZero(def_mask)
 
-                fig = plt.figure(figsize=(5, 5))
-                fig.add_subplot(1, 3, 1)
-                plt.imshow(cv2.cvtColor(instance, cv2.COLOR_BGR2RGB))
-                plt.title('OG')
-                fig.add_subplot(1, 3, 2)
-                plt.imshow(att_mask)
-                plt.title('AMask')
-                fig.add_subplot(1, 3, 3)
-                plt.imshow(def_mask)
-                plt.title('DMask')
-                plt.show()
+                # fig = plt.figure(figsize=(5, 5))
+                # fig.add_subplot(1, 3, 1)
+                # plt.imshow(cv2.cvtColor(instance, cv2.COLOR_BGR2RGB))
+                # plt.title('OG')
+                # fig.add_subplot(1, 3, 2)
+                # plt.imshow(att_mask)
+                # plt.title('AMask')
+                # fig.add_subplot(1, 3, 3)
+                # plt.imshow(def_mask)
+                # plt.title('DMask')
+                # plt.show()
 
                 (h, w, _) = instance.shape
 
-                if attColor < 70:
-                    if (att_comp < h * w * 5 / 100):
-                        att_comp = 0
-                print(def_comp, h * w * 5 / 100)
-                if defColor < 70:
-                    if (def_comp < h * w * 5 / 100):
-                        def_comp = 0
+                # if attColor < 70:
+                if (att_comp < h * w * 5 / 100):
+                    att_comp = 0
+                # print(def_comp, h * w * 5 / 100)
+                # if defColor < 70:
+                if (def_comp < h * w * 5 / 100):
+                    def_comp = 0
 
-                print(att_comp, def_comp)
+                # print(att_comp, def_comp)
 
                 res = 2
                 if 0 < def_comp > att_comp:
                     res = 1
                 elif att_comp > 0:
                     res = 0
+
+                print(res)
 
                 f = open(output_path + "\\segmented{}.txt".format(i), "w")
                 toWrite = str(startX + (endX - startX) / 2) + " " + str(endY) + "\n" + str(res)
