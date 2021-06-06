@@ -36,10 +36,13 @@ public class Video {
 	@CreatedDate
 	private LocalDateTime createdDate;
 
-	public Video(String originalFilename, Path targetLocation, long size) {
+	private String username;
+
+	public Video(String originalFilename, Path targetLocation, long size, String username) {
 		fileName = originalFilename;
 		storedPath = targetLocation.toString();
 		this.size = size;
 		createdDate = LocalDateTime.now();
+		this.username = username;
 	}
 }

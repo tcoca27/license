@@ -1,5 +1,5 @@
 import glob
-import sys
+from constants import  *
 from collections import defaultdict
 
 import numpy as np
@@ -37,44 +37,45 @@ def segment_by_angle_kmeans(lines, k=2, **kwargs):
     segmented = list(segmented.values())
     return segmented
 
-frame_path = str(sys.argv[1])
-images_path = glob.glob(frame_path + "\*.jpg")
-side = 'left'
-for im_path in images_path[:1]:
-    img = cv2.imread(im_path)
-    line_image = np.copy(img)
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    kernel = np.ones((4, 4), np.uint8)
-    gray = cv2.erode(gray, kernel, iterations=1)
+def find_side(frame_path):
+    images_path = glob.glob(processing_folder + '\\' + frame_path + "\*.jpg")
+    side = 'left'
+    for im_path in images_path[:1]:
+        img = cv2.imread(im_path)
+        line_image = np.copy(img)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        kernel = np.ones((4, 4), np.uint8)
+        gray = cv2.erode(gray, kernel, iterations=1)
 
-    kernel_size = 5
-    blur_gray = cv2.GaussianBlur(gray, (kernel_size, kernel_size), 0)
+        kernel_size = 5
+        blur_gray = cv2.GaussianBlur(gray, (kernel_size, kernel_size), 0)
 
-    low_threshold = 100
-    high_threshold = 200
-    edges = cv2.Canny(blur_gray, low_threshold, high_threshold)
+        low_threshold = 100
+        high_threshold = 200
+        edges = cv2.Canny(blur_gray, low_threshold, high_threshold)
 
-    rho = 1  # distance resolution in pixels of the Hough grid
-    theta = np.pi / 180  # angular resolution in radians of the Hough grid
-    threshold = 30  # minimum number of votes (intersections in Hough grid cell)
-    min_line_length = 100  # minimum number of pixels making up a line
-    max_line_gap = 10  # maximum gap in pixels between connectable line segments
+        rho = 1  # distance resolution in pixels of the Hough grid
+        theta = np.pi / 180  # angular resolution in radians of the Hough grid
+        threshold = 30  # minimum number of votes (intersections in Hough grid cell)
+        min_line_length = 100  # minimum number of pixels making up a line
+        max_line_gap = 10  # maximum gap in pixels between connectable line segments
 
-    lines = cv2.HoughLinesP(edges, rho, theta, threshold, np.array([]), min_line_length, max_line_gap)
+        lines = cv2.HoughLinesP(edges, rho, theta, threshold, np.array([]), min_line_length, max_line_gap)
 
-    for line in lines:
-        for x1, y1, x2, y2 in line:
-            cv2.line(line_image, (x1, y1), (x2, y2), (255, 255, 0), 5)
+        for line in lines:
+            for x1, y1, x2, y2 in line:
+                cv2.line(line_image, (x1, y1), (x2, y2), (255, 255, 0), 5)
 
-    segmented = segment_by_angle_kmeans(lines)
-    if len(segmented[0]) > len(segmented[1]):
-        angle_perp = get_mean_angle(segmented[1])
-        angle_parallel = get_mean_angle(segmented[0])
-    else:
-        angle_perp = get_mean_angle(segmented[0])
-        angle_parallel = get_mean_angle(segmented[1])
+        segmented = segment_by_angle_kmeans(lines)
+        if len(segmented[0]) > len(segmented[1]):
+            angle_perp = get_mean_angle(segmented[1])
+            angle_parallel = get_mean_angle(segmented[0])
+        else:
+            angle_perp = get_mean_angle(segmented[0])
+            angle_parallel = get_mean_angle(segmented[1])
 
-    if angle_perp > angle_parallel:
-        print('left')
-    else:
-        print('right')
+        if angle_perp > angle_parallel:
+            side = 'left'
+        else:
+            side = 'right'
+        return side

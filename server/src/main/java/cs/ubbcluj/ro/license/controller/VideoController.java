@@ -6,6 +6,7 @@ import cs.ubbcluj.ro.license.config.VideoStorageProperties;
 import cs.ubbcluj.ro.license.model.Video;
 import cs.ubbcluj.ro.license.payload.response.VideoResponse;
 import cs.ubbcluj.ro.license.service.VideoStorageService;
+import cs.ubbcluj.ro.license.utils.JwtAccessor;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -39,6 +40,9 @@ public class VideoController {
   @Autowired
   private VideoStorageService videoStorageService;
 
+  @Autowired
+  private JwtAccessor jwtAccessor;
+
   @PostMapping(value = "/uploadVideo", consumes = MULTIPART_FORM_DATA)
   @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
   public VideoResponse uploadVideo(@RequestParam("video") MultipartFile video,
@@ -68,8 +72,7 @@ public class VideoController {
 
   @GetMapping(value = "/{id}", produces = "video/mp4")
   @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-  public FileSystemResource stream(@PathVariable Long id)
-      throws FileNotFoundException {
+  public FileSystemResource stream(@PathVariable Long id) {
     Video video = videoStorageService.getVideo(id);
     String storedPath = video.getStoredPath();
     File videoFile = new File(storedPath);
@@ -80,6 +83,14 @@ public class VideoController {
   @PreAuthorize("hasRole('ADMIN')")
   public List<VideoResponse> getAll() {
     return videoStorageService.getVideos().stream().map(
+        video -> new VideoResponse(video.getId(), video.getFileName(), video.getCreatedDate(),
+            video.getSize())).collect(Collectors.toList());
+  }
+
+  @GetMapping(value = "/my")
+  @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+  public List<VideoResponse> getAllByUser() {
+    return videoStorageService.getVideosFromUser(jwtAccessor.getSub()).stream().map(
         video -> new VideoResponse(video.getId(), video.getFileName(), video.getCreatedDate(),
             video.getSize())).collect(Collectors.toList());
   }

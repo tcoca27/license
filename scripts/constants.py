@@ -1,0 +1,7 @@
+videos_folder = r'D:\Repos\licenta\videos'
+processing_folder = r'D:\Repos\licenta\processing'
+results_folder = r'D:\Repos\licenta\results'
+paint_model = r'D:\Repos\licenta\license\scripts\model_paint\model_final.pth'
+weights_path_mask = r'D:\Repos\licenta\license\scripts\mask-rcnn-coco\frozen_inference_graph_coco.pb'
+config_path_mask = r'D:\Repos\licenta\license\scripts\mask-rcnn-coco\mask_rcnn_inception_v2_coco_2018_01_28.pbtxt'
+labels_path_mask = r'D:\Repos\licenta\license\scripts\mask-rcnn-coco\object_detection_classes_coco.txt'

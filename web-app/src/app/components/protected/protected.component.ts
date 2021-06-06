@@ -78,4 +78,12 @@ export class ProtectedComponent implements OnInit {
       }
     );
   }
+
+  public attColorChange(color: string): void {
+    this.attColor = color;
+  }
+
+  public defColorChange(color: string): void {
+    this.defColor = color;
+  }
 }
