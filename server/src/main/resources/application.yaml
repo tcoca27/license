@@ -37,6 +37,7 @@ spring:
 
 file:
   upload-dir: D:\Repos\licenta\videos
+  results-dir: D:\Repos\licenta\results
 
 license:
   app:
@@ -45,3 +46,6 @@ license:
 server:
   tomcat:
     max-swallow-size: 200MB
+
+scripts:
+  api: http://localhost:5000/api/

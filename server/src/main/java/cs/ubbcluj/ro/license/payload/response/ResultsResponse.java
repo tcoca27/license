@@ -1,6 +1,5 @@
 package cs.ubbcluj.ro.license.payload.response;
 
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,12 +9,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class VideoResponse {
+public class ResultsResponse {
 
-	public Long id;
-	public String filename;
-	public LocalDateTime createdDate;
-	public long size;
-	public String username;
+  String image;
 
 }

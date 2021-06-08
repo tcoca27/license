@@ -35,32 +35,6 @@ export class ProtectedComponent implements OnInit {
     this.fileInfos = this.videosService.getVideos();
   }
 
-  public selectFiles(event): void {
-    this.progressInfos = [];
-    this.selectedFiles = event.target.files;
-  }
-
-  public uploadFiles(): void {
-    this.message = '';
-
-    for (let i = 0; i < this.selectedFiles.length; i++) {
-      this.upload(i, this.selectedFiles[i], UserComponent.getHSL(this.attColor), UserComponent.getHSL(this.defColor));
-    }
-  }
-
-  upload(idx, file, attColor, defColor): void {
-    this.progressInfos[idx] = { value: 'Uploading', fileName: file.name };
-
-    this.videosService.uploadVideo(file, attColor, defColor).subscribe(
-      () => {
-        this.progressInfos[idx].value = 'Done';
-      },
-      err => {
-        this.progressInfos[idx].value = 'Error Uploading';
-        this.message = 'Could not upload the file:' + file.name;
-      });
-  }
-
 
   public showVideo(id: number): void {
     this.videosService.getVideo(id).subscribe(
@@ -79,11 +53,15 @@ export class ProtectedComponent implements OnInit {
     );
   }
 
-  public attColorChange(color: string): void {
-    this.attColor = color;
+  public deleteVideo(id: any): void {
+    this.videosService.deleteVideo(id).subscribe(() => window.location.reload());
   }
 
-  public defColorChange(color: string): void {
-    this.defColor = color;
+  public deleteUser(): void {
+    this.videosService.deleteUser(this.videoDetail.username).subscribe(() => window.location.reload());
+  }
+
+  public isCurrentUser(username: string): boolean {
+    return this.videosService.isCurrentUser(username);
   }
 }

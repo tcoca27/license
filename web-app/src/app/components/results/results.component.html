@@ -3,10 +3,10 @@
     <div class="card-header">List of Files</div>
     <ul
       class="list-group list-group-flush"
-      *ngFor="let file of fileInfos | async"
+      *ngFor="let file of fileInfos | async; let i=index"
     >
       <li class="list-group-item">
-        <a href="javascript:;" (click)="showVideo(file.id)"> {{file.filename}} </a>
+        <a href="javascript:;" (click)="showVideo(file.id)"> Play {{i + 1}} uploaded on {{file.createdDate | date: 'short'}} </a>
       </li>
     </ul>
   </div>
@@ -21,21 +21,11 @@
     <video style="max-width: 100%" controls>
       <source [src]="videoSource" type="video/mp4">
     </video>
-
-    <div class = "space">
-      <button
-        class="float-right btn btn-success"
-        (click)="deleteVideo(videoDetail.id)"
-      >
-        Delete Video
-      </button>
-
-      <button *ngIf="!isCurrentUser(videoDetail.username)"
-        class="float-right btn btn-success"
-        (click)="deleteUser()"
-      >
-        Block User
-      </button>
+  </div>
+  <div *ngIf="videoDetail && results && results.length" class="card center">
+    <header>Best Options</header>
+    <div class="form-item" *ngFor="let imgPath of imagePath">
+      <img class="float-right" [src]="imgPath" style="max-width: 100%"/>
     </div>
   </div>
 </div>

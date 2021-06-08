@@ -117,6 +117,10 @@ def api_analysis():
 
     get_frames_from_video(name, time)
     side = find_side(name)
+    attColor = attColor.lower()
+    defColor = defColor.lower()
+
+    print(attColor, defColor)
 
     p1 = Process(target=paint_segmentation, args=(name, side))
     p1.start()

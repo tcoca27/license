@@ -4,13 +4,14 @@ import { Observable } from 'rxjs';
 import { ENDPOINT } from '../config/endpoint.config';
 import { DomSanitizer } from '@angular/platform-browser';
 import { map } from 'rxjs/operators';
+import { TokenStorageService } from './token-storage.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class VideosService {
 
-  constructor(private http: HttpClient, private domSanitizer: DomSanitizer) {
+  constructor(private http: HttpClient, private domSanitizer: DomSanitizer, private tokenStorageService: TokenStorageService) {
   }
 
   public getVideos(): Observable<any> {
@@ -44,5 +45,26 @@ export class VideosService {
     return this.http.get(ENDPOINT.VIDEOS_API.STREAM(id), {
       responseType: 'blob',
     }).pipe(map(e => this.domSanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(e))));
+  }
+
+  public getMyVideos(): Observable<any> {
+    console.log(ENDPOINT.VIDEOS_API.MY);
+    return this.http.get(ENDPOINT.VIDEOS_API.MY);
+  }
+
+  public getResults(id: number): Observable<any> {
+    return this.http.get(ENDPOINT.VIDEOS_API.RESULTS(id));
+  }
+
+  public deleteVideo(id: number): Observable<any> {
+    return this.http.delete(ENDPOINT.VIDEOS_API.STREAM(id));
+  }
+
+  public deleteUser(username: string): Observable<any> {
+    return this.http.delete(ENDPOINT.USER_API.USER(username));
+  }
+
+  public isCurrentUser(username: string): boolean {
+    return this.tokenStorageService.getUser().username === username;
   }
 }

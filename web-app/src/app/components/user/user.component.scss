@@ -17,9 +17,17 @@
 }
 
 .mr-3 {
-  margin-left: 13px;
+  margin-left: 9px !important;
 }
 
 .float-right {
+  margin-top: 15px;
+}
+
+.custom-select {
+  padding: 0;
+  height: 25px;
+  max-width: 50%;
+  margin-left: 15px;
   margin-top: 15px;
 }

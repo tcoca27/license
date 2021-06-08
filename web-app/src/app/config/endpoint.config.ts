@@ -7,20 +7,24 @@ export const ENDPOINT = {
     SIGNIN: baseUrl + '/api/auth/signin',
     SIGNUP: baseUrl + '/api/auth/signup',
   },
-  TESP_API: {
-    USER: baseUrl + '/api/test/user',
-    ADMIN: baseUrl + '/api/test/admin',
-    ALL: baseUrl + '/api/test/all'
+  USER_API: {
+    USER: (username: string) => {
+      return baseUrl + `/api/user/${username}`;
+    },
   },
   VIDEOS_API: {
     UPLOAD_ONE: baseUrl + '/api/videos/uploadVideo',
     UPLOAD_MULTIPLE: baseUrl + '/api/videos/uploadVideos',
     GET_VIDEOS: baseUrl + '/api/videos/',
+    MY: baseUrl + '/api/videos/my',
     GET_ONE: (id: number) => {
       return baseUrl + `/api/videos/info/${id}`;
     },
     STREAM: (id: number) => {
       return baseUrl + `/api/videos/${id}`;
+    },
+    RESULTS: (id: number) => {
+      return baseUrl + `/api/videos/results/${id}`;
     },
   }
 };

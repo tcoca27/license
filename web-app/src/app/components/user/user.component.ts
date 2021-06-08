@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../services/user.service';
 import { VideosService } from '../../services/videos.service';
-import { Observable } from 'rxjs';
+import { ColorEnum } from '../../basketball/color-enum';
 
 @Component({
   selector: 'app-user',
@@ -11,22 +11,17 @@ import { Observable } from 'rxjs';
 export class UserComponent implements OnInit {
 
   constructor(private userService: UserService, private videosService: VideosService) {
+    this.keys = Object.keys(this.colors).filter(k => isNaN(Number(k)));
+    console.log(this.keys);
   }
 
   public selectedFiles: FileList;
   public progressInfos = [];
   public message = '';
-  public attColor: string;
-  public defColor: string;
-
-  static getHSL(color: string): string[] {
-    const colors: string = color.split('(')[1];
-    const tokens = colors.split(',');
-    const h = tokens[0];
-    const s = tokens[1].split('%')[0];
-    const l = tokens[2].split('%')[0];
-    return [h, s, l];
-  }
+  public attColor = ColorEnum.BLACK;
+  public defColor = ColorEnum.WHITE;
+  public colors = ColorEnum;
+  public keys;
 
   ngOnInit(): void {
   }
@@ -46,14 +41,14 @@ export class UserComponent implements OnInit {
     }
 
     for (let i = 0; i < this.selectedFiles.length; i++) {
-      this.upload(i, this.selectedFiles[i], UserComponent.getHSL(this.attColor), UserComponent.getHSL(this.defColor));
+      this.upload(i, this.selectedFiles[i]);
     }
   }
 
-  public upload(idx, file, attColor, defColor): void {
+  public upload(idx, file): void {
     this.progressInfos[idx] = { value: 'Uploading', fileName: file.name };
 
-    this.videosService.uploadVideo(file, attColor, defColor).subscribe(
+    this.videosService.uploadVideo(file, this.attColor, this.defColor).subscribe(
       () => {
         this.progressInfos[idx].value = 'Done';
       },
@@ -61,13 +56,5 @@ export class UserComponent implements OnInit {
         this.progressInfos[idx].value = 'Error Uploading';
         this.message = 'Could not upload the file:' + file.name;
       });
-  }
-
-  public attColorChange(color: string): void {
-    this.attColor = color;
-  }
-
-  public defColorChange(color: string): void {
-    this.defColor = color;
   }
 }

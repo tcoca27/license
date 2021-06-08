@@ -16,23 +16,38 @@
     </label>
   </div>
 
+<!--  <div class="form-item-field">-->
+<!--    <p>Please select attacking team's color:</p>-->
+<!--    <input class="float-left-flex" [value]="attColor"-->
+<!--           [style.background]="attColor"-->
+<!--           [(colorPicker)]="attColor"-->
+<!--           (colorPickerChange)="attColorChange($event)"-->
+<!--           [cpOutputFormat]="'hsla'"/>-->
+<!--  </div>-->
+
+<!--  <div class="form-item-field">-->
+<!--    <p>Please select defending team's color:</p>-->
+<!--    <input class="float-left-flex mr-3" [value]="defColor"-->
+<!--           [style.background]="defColor"-->
+<!--           [(colorPicker)]="defColor"-->
+<!--           (colorPickerChange)="defColorChange($event)"-->
+<!--           [cpOutputFormat]="'hsla'"/>-->
+<!--  </div>-->
+
   <div class="form-item-field">
     <p>Please select attacking team's color:</p>
-    <input class="float-left-flex" [value]="attColor"
-           [style.background]="attColor"
-           [(colorPicker)]="attColor"
-           (colorPickerChange)="attColorChange($event)"
-           [cpOutputFormat]="'hsla'"/>
+    <select class="custom-select" [(ngModel)]="attColor">
+      <option *ngFor="let key of keys" [value]="key" [label]="key"></option>
+    </select>
   </div>
 
   <div class="form-item-field">
     <p>Please select defending team's color:</p>
-    <input class="float-left-flex mr-3" [value]="defColor"
-           [style.background]="defColor"
-           [(colorPicker)]="defColor"
-           (colorPickerChange)="defColorChange($event)"
-           [cpOutputFormat]="'hsla'"/>
+    <select class="custom-select mr-3" [(ngModel)]="defColor">
+      <option *ngFor="let key of keys" [value]="key" [label]="key"></option>
+    </select>
   </div>
+
 
   <button
     class="float-right btn btn-success"

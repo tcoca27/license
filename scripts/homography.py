@@ -409,7 +409,10 @@ def homography(frame_path, side):
         os.mkdir(results_folder + '\\' + frame_path)
     except:
         print('Directory already exists')
-    for imgs in res[-5:]:
+    res1 = res[-5:]
+    if len(res1) > 1:
+        res1 = res1[1:]
+    for imgs in res1:
         save_results.append(return_to_3d(imgs[0], imgs[1], imgs[2]) + '.jpg')
         # fig = plt.figure(figsize=(15, 15))
         # fig.add_subplot(1, 3, 1)

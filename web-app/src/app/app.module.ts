@@ -13,6 +13,7 @@ import { ProtectedComponent } from './components/protected/protected.component';
 import { authInterceptorProviders } from './helpers/auth.interceptor';
 import { UserComponent } from './components/user/user.component';
 import { ColorPickerModule } from 'ngx-color-picker';
+import { ResultsComponent } from './components/results/results.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { ColorPickerModule } from 'ngx-color-picker';
     ProfileComponent,
     ProtectedComponent,
     UserComponent,
+    ResultsComponent,
   ],
   imports: [
     BrowserModule,

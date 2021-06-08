@@ -12,4 +12,6 @@ public interface VideoRepository extends JpaRepository<Video, Long> {
 
 	List<Video> findByUsername(String username);
 
+	Long deleteAllByUsername(String username);
+
 }

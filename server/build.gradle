@@ -29,6 +29,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web-services'
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: '5.5.0'
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose', version: '5.5.0'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.5'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.5'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'org.postgresql:postgresql'

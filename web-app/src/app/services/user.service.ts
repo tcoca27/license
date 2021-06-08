@@ -7,19 +7,4 @@ import { ENDPOINT } from '../config/endpoint.config';
   providedIn: 'root'
 })
 export class UserService {
-
-  constructor(private http: HttpClient) {
-  }
-
-  public getPublicContent(): Observable<any> {
-    return this.http.get(ENDPOINT.TESP_API.ALL, { responseType: 'text' });
-  }
-
-  public getUserContent(): Observable<any> {
-    return this.http.get(ENDPOINT.TESP_API.USER, { responseType: 'text' });
-  }
-
-  public getAdminContent(): Observable<any> {
-    return this.http.get(ENDPOINT.TESP_API.ADMIN, { responseType: 'text' });
-  }
 }
