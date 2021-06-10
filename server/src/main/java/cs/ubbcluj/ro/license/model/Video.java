@@ -3,6 +3,8 @@ package cs.ubbcluj.ro.license.model;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -38,11 +40,19 @@ public class Video {
 
 	private String username;
 
-	public Video(String originalFilename, Path targetLocation, long size, String username) {
+	@Enumerated(EnumType.STRING)
+	private ColorEnum attColor;
+
+	@Enumerated(EnumType.STRING)
+	private ColorEnum defColor;
+
+	public Video(String originalFilename, Path targetLocation, long size, String username, ColorEnum attColor, ColorEnum defColor) {
 		fileName = originalFilename;
 		storedPath = targetLocation.toString();
 		this.size = size;
 		createdDate = LocalDateTime.now();
 		this.username = username;
+		this.attColor = attColor;
+		this.defColor = defColor;
 	}
 }

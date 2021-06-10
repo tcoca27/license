@@ -21,6 +21,27 @@
     <video style="max-width: 100%" controls>
       <source [src]="videoSource" type="video/mp4">
     </video>
+
+    <button
+      class="float-right btn btn-success"
+      (click)="paintSegmentation(videoDetail.id)"
+    >
+      Paint Segmentation Results
+    </button>
+
+    <button
+      class="float-right btn btn-success"
+      (click)="personDetection(videoDetail.id)"
+    >
+      Teams Detection Result
+    </button>
+
+    <button
+      class="float-right btn btn-success"
+      (click)="findSide(videoDetail.id)"
+    >
+      Find Side
+    </button>
   </div>
   <div *ngIf="videoDetail && results && results.length" class="card center">
     <header>Best Options</header>

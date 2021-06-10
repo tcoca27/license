@@ -26,5 +26,14 @@ export const ENDPOINT = {
     RESULTS: (id: number) => {
       return baseUrl + `/api/videos/results/${id}`;
     },
+    PAINT: (id: number) => {
+      return baseUrl + `/api/videos/${id}/paint`;
+    },
+    PERSONS: (id: number) => {
+      return baseUrl + `/api/videos/${id}/persons`;
+    },
+    SIDE: (id: number) => {
+      return baseUrl + `/api/videos/${id}/side`;
+    }
   }
 };

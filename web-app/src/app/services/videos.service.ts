@@ -67,4 +67,16 @@ export class VideosService {
   public isCurrentUser(username: string): boolean {
     return this.tokenStorageService.getUser().username === username;
   }
+
+  public paintSegmentation(id: number): Observable<any> {
+    return this.http.get(ENDPOINT.VIDEOS_API.PAINT(id));
+  }
+
+  public personsDetection(id: number): Observable<any> {
+    return this.http.get(ENDPOINT.VIDEOS_API.PERSONS(id));
+  }
+
+  public findSide(id: number): Observable<any> {
+    return this.http.get(ENDPOINT.VIDEOS_API.SIDE(id));
+  }
 }

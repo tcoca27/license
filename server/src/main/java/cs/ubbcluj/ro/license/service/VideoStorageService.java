@@ -67,7 +67,7 @@ public class VideoStorageService {
       Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
       videoRepository.save(new Video(nameToSave, targetLocation, file.getSize(),
-          jwtAccessor.getSub()));
+          jwtAccessor.getSub(), attColor, defColor));
       new Thread(() -> {
         try {
           analyzeVideo(nameToSave, attColor, defColor);

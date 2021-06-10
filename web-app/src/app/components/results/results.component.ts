@@ -55,4 +55,34 @@ export class ResultsComponent implements OnInit {
       }
     );
   }
+
+  public paintSegmentation(id: number): void {
+    this.videosService.paintSegmentation(id).subscribe(
+      (response: any) => {
+        console.log(response);
+      }, error => {
+        console.log(error);
+      }
+    );
+  }
+
+  public personDetection(id: number): void {
+    this.videosService.personsDetection(id).subscribe(
+      (response: any) => {
+        console.log(response);
+      }, error => {
+        console.log(error);
+      }
+    );
+  }
+
+  public findSide(id: number): void {
+    this.videosService.findSide(id).subscribe(
+      (response: any) => {
+        console.log(response);
+      }, error => {
+        console.log(error);
+      }
+    );
+  }
 }

@@ -22,11 +22,10 @@ public class ScriptsService {
 
   public List<String> analysis(String name, ColorEnum attColor, ColorEnum defColor)
       throws IOException, InterruptedException {
-    System.out.println(scriptsApi.concat(String.format("analysis?name=%s&time=%s&attColor=%s&defColor=%s",
-        name, 0.1, attColor.toString().toLowerCase(), defColor.toString().toLowerCase())));
     HttpRequest request = HttpRequest.newBuilder(
-        URI.create(scriptsApi.concat(String.format("analysis?name=%s&time=%s&attColor=%s&defColor=%s",
-            name, 0.1, attColor, defColor))))
+        URI.create(
+            scriptsApi.concat(String.format("analysis?name=%s&time=%s&attColor=%s&defColor=%s",
+                name, 0.1, attColor, defColor))))
         .header("accept", "application/json")
         .build();
 
@@ -35,13 +34,76 @@ public class ScriptsService {
     return tokenize(response.body());
   }
 
+  public boolean splitFrames(String name) throws IOException, InterruptedException {
+    HttpRequest request = HttpRequest.newBuilder(
+        URI.create(scriptsApi.concat(String.format("frames?name=%s&time=%s",
+            name, 1))))
+        .header("accept", "application/json")
+        .build();
+
+    HttpResponse<String> response = httpClient.send(request, BodyHandlers.ofString());
+    return (response.body().contains("OK"));
+  }
+
+  public String findSide(String name) throws IOException, InterruptedException {
+    HttpRequest request = HttpRequest.newBuilder(
+        URI.create(scriptsApi.concat(String.format("side?name=%s",
+            name))))
+        .header("accept", "application/json")
+        .build();
+
+    HttpResponse<String> response = httpClient.send(request, BodyHandlers.ofString());
+    return response.body();
+  }
+
+  public void paintSegmentation(String name)
+      throws IOException, InterruptedException {
+    boolean frames = splitFrames(name);
+    String side = findSide(name);
+    if (frames && (side.contains("right") || side.contains("left"))) {
+      HttpRequest request = HttpRequest.newBuilder(
+          URI.create(
+              scriptsApi.concat(String.format("paint?name=%s&side=%s",
+                  name, side.strip().replace("\"", "")))))
+          .header("accept", "application/json")
+          .build();
+
+      HttpResponse<String> response = httpClient.send(request, BodyHandlers.ofString());
+
+      String path = response.body().strip();
+      System.out.println(path);
+
+    }
+    throw new RuntimeException("Paint Segmentation ran into errors");
+  }
+
+  public void personDetection(String name, ColorEnum attColor, ColorEnum defColor)
+      throws IOException, InterruptedException {
+    if (splitFrames(name)) {
+      HttpRequest request = HttpRequest.newBuilder(
+          URI.create(
+              scriptsApi
+                  .concat(String.format("person-teams-detection?name=%s&attColor=%s&defColor=%s",
+                      name, attColor, defColor))))
+          .header("accept", "application/json")
+          .build();
+
+      HttpResponse<String> response = httpClient.send(request, BodyHandlers.ofString());
+
+      String path = response.body();
+      System.out.println(path);
+
+    }
+    throw new RuntimeException("Person Detection ran into errors");
+  }
+
   private List<String> tokenize(String body) {
     System.out.println(body);
     String[] tokens = body.strip().split(",");
     List<String> result = new ArrayList<>();
-    for(String token: tokens) {
-      token = token.replace("[","");
-      token = token.replace("]","");
+    for (String token : tokens) {
+      token = token.replace("[", "");
+      token = token.replace("]", "");
       result.add(token);
     }
     System.out.println(result);

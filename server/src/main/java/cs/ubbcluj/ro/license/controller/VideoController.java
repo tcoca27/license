@@ -8,6 +8,7 @@ import cs.ubbcluj.ro.license.model.Result;
 import cs.ubbcluj.ro.license.model.Video;
 import cs.ubbcluj.ro.license.payload.response.ResultsResponse;
 import cs.ubbcluj.ro.license.payload.response.VideoResponse;
+import cs.ubbcluj.ro.license.service.ScriptsService;
 import cs.ubbcluj.ro.license.service.VideoStorageService;
 import cs.ubbcluj.ro.license.utils.JwtAccessor;
 import java.io.ByteArrayOutputStream;
@@ -50,6 +51,9 @@ public class VideoController {
 
   @Autowired
   private VideoStorageService videoStorageService;
+
+  @Autowired
+  private ScriptsService scriptsService;
 
   @Autowired
   private JwtAccessor jwtAccessor;
@@ -131,6 +135,32 @@ public class VideoController {
     return videoStorageService.getVideosFromUser(jwtAccessor.getSub()).stream().map(
         video -> new VideoResponse(video.getId(), video.getFileName(), video.getCreatedDate(),
             video.getSize(), video.getUsername())).collect(Collectors.toList());
+  }
+
+  @GetMapping(value = "/{id}/paint", produces = "video/mp4")
+  @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+  public ResponseEntity paintSegmentation(@PathVariable Long id)
+      throws IOException, InterruptedException {
+    Video video = videoStorageService.getVideo(id);
+    scriptsService.paintSegmentation(video.getFileName());
+    return new ResponseEntity(HttpStatus.OK);
+  }
+
+  @GetMapping(value = "/{id}/persons", produces = "video/mp4")
+  @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+  public ResponseEntity personsDetection(@PathVariable Long id)
+      throws IOException, InterruptedException {
+    Video video = videoStorageService.getVideo(id);
+    scriptsService.personDetection(video.getFileName(), video.getAttColor(), video.getDefColor());
+    return new ResponseEntity(HttpStatus.OK);
+  }
+
+  @GetMapping(value = "/{id}/side", produces = "video/mp4")
+  @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+  public String findSide(@PathVariable Long id)
+      throws IOException, InterruptedException {
+    Video video = videoStorageService.getVideo(id);
+    return scriptsService.findSide(video.getFileName()).strip();
   }
 
   private void readAndWrite(final InputStream is, OutputStream os)
