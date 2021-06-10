@@ -1,8 +1,10 @@
 import glob
+import os
 
 from detectron2 import model_zoo
 from detectron2.config import get_cfg
 from detectron2.engine import DefaultPredictor
+import numpy as np
 
 import cv2
 from constants import *
@@ -105,8 +107,10 @@ cfg.MODEL.DEVICE = 'cpu'
 predictor = DefaultPredictor(cfg)
 
 
-def paint_segmentation(frame_path, side):
+def paint_segmentation(frame_path, side, res=False):
     images_path = glob.glob(processing_folder + '\\' + frame_path + "\*.jpg")
+    if res:
+        images_path = glob.glob(results_folder + '\\' + frame_path + '\\frames' + "\*.jpg")
     for im_path in images_path:
         im = cv2.imread(im_path)
         outputs = predictor(im)
@@ -118,16 +122,31 @@ def paint_segmentation(frame_path, side):
         else:
             left_up, right_up, right_down, left_down = get_paint_left(mask, x1, y1, x2, y2, im.shape)
 
-        f = open(im_path[:-4] + "_paint.txt", "w")
         toWrite = str(left_up) + " " + str(right_up) + " " + str(right_down) + " " + str(left_down)
+
+        if res:
+            try:
+                os.mkdir(results_folder + '\\' + frame_path)
+            except:
+                print('Directory already exists')
+
+            try:
+                os.mkdir(results_folder + '\\' + frame_path + '\\paint')
+            except:
+                print('Directory already exists')
+            cv2.imwrite(results_folder + '\\' + frame_path + '\\paint\\' + im_path.split('\\')[-1][:-4] + "_mask.jpg",
+                        np.float32(mask) * 255)
+            cv2.circle(im, (int(left_up[1]), int(left_up[0])), radius=0, color=(0, 255, 0), thickness=10)
+            cv2.circle(im, (int(right_up[1]), int(right_up[0])), radius=0, color=(0, 255, 0), thickness=10)
+            cv2.circle(im, (int(right_down[1]), int(right_down[0])), radius=0, color=(0, 255, 0), thickness=10)
+            cv2.circle(im, (int(left_down[1]), int(left_down[0])), radius=0, color=(0, 255, 0), thickness=10)
+            cv2.imwrite(results_folder + '\\' + frame_path + '\\paint\\' + im_path.split('\\')[-1][:-4] + '_paint.jpg',
+                        im)
+            f = open(results_folder + '\\' + frame_path + '\\paint\\' + im_path.split('\\')[-1][:-4] + "_paint.txt",
+                     "w")
+            f.write(toWrite)
+            f.close()
+
+        f = open(im_path[:-4] + "_paint.txt", "w")
         f.write(toWrite)
         f.close()
-
-        # plt.imshow(mask)
-        # plt.show()
-        # cv2.circle(im, (int(left_up[1]), int(left_up[0])), radius=0, color=(0, 255, 0), thickness=20)
-        # cv2.circle(im, (int(right_up[1]), int(right_up[0])), radius=0, color=(0, 255, 0), thickness=20)
-        # cv2.circle(im, (int(right_down[1]), int(right_down[0])), radius=0, color=(0, 255, 0), thickness=20)
-        # cv2.circle(im, (int(left_down[1]), int(left_down[0])), radius=0, color=(0, 255, 0), thickness=20)
-        # plt.imshow(cv2.cvtColor(im, cv2.COLOR_BGR2RGB))
-        # plt.show()

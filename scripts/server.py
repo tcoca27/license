@@ -6,6 +6,7 @@ from paint_segmentation import paint_segmentation
 from person_team_detection import person_detection_team_classification
 from homography import homography
 from multiprocessing import Process
+from constants import *
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
@@ -28,7 +29,7 @@ def api_frames():
     if error != 2:
         return "Error: Not all arguments provided."
 
-    get_frames_from_video(name, time)
+    get_frames_from_video(name, time, True)
 
     return jsonify('OK')
 
@@ -42,7 +43,7 @@ def api_side():
     if error != 1:
         return "Error: Not all arguments provided."
 
-    return jsonify(find_side(name))
+    return jsonify(find_side(name, True))
 
 
 @app.route('/api/paint', methods=['GET'])
@@ -57,9 +58,9 @@ def api_paint():
     if error != 2:
         return "Error: Not all arguments provided."
 
-    paint_segmentation(name, side)
+    paint_segmentation(name, side, True)
 
-    return jsonify('OK')
+    return jsonify(results_folder + '\\' + name + '\\paint')
 
 
 @app.route('/api/person-teams-detection', methods=['GET'])
@@ -77,9 +78,9 @@ def api_persons_team():
     if error != 3:
         return "Error: Not all arguments provided."
 
-    person_detection_team_classification(name, attColor, defColor)
+    person_detection_team_classification(name, attColor.lower(), defColor.lower(), True)
 
-    return jsonify('OK')
+    return jsonify(results_folder + '\\' + name + '\\teams')
 
 
 @app.route('/api/homography', methods=['GET'])

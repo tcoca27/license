@@ -9,11 +9,12 @@ from constants import *
 import cv2
 from scipy.ndimage.measurements import label
 
-#TODO: better define these
+# TODO: better define these
 color_bounds = {'red': [[128, 0, 0], [255, 80, 80]], 'blue': [[0, 0, 128], [80, 120, 255]],
                 'dark_blue': [[0, 0, 55], [60, 90, 128]], 'purple': [[0, 0, 55], [75, 100, 128]],
-                'white': [[150, 150, 150], [255, 255, 255]], 'green' :[[0, 128, 0], [160, 255, 160]],
-                'black': [[1, 1, 1], [64, 64, 64]], 'yellow': [[120,120,0], [255,255,180]], 'gray': [[64,64,64], [150, 150, 150]]
+                'white': [[150, 150, 150], [255, 255, 255]], 'green': [[0, 128, 0], [160, 255, 160]],
+                'black': [[1, 1, 1], [64, 64, 64]], 'yellow': [[120, 120, 0], [255, 255, 180]],
+                'gray': [[64, 64, 64], [150, 150, 150]]
                 }
 
 labelsPath = labels_path_mask
@@ -90,6 +91,7 @@ def mask_player(img, color):
 
     return mask
 
+
 def mask_court(img, color, tol=10):
     hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
@@ -106,12 +108,18 @@ def mask_court(img, color, tol=10):
 
     return mask
 
-def person_detection_team_classification(name, attColor, defColor):
-    print('here+class')
+
+def person_detection_team_classification(name, attColor, defColor, resFlag=False):
     images_path = glob.glob(processing_folder + '\\' + name + "\*.jpg")
+    if resFlag:
+        res_pth = results_folder + '\\' + name + '\\teams'
+        os.mkdir(res_pth)
+        images_path = glob.glob(results_folder + '\\' + name + '\\frames' + "\*.jpg")
     court_color = None
     for img_path in images_path:
         output_path = img_path[:-4]
+        if resFlag:
+            output_path = results_folder + '\\' + name + '\\teams\\' + img_path.split('\\')[-1][:-4]
         os.mkdir(output_path)
         image = cv2.imread(img_path, cv2.IMREAD_UNCHANGED)
         (H, W) = image.shape[:2]
@@ -195,17 +203,19 @@ def person_detection_team_classification(name, attColor, defColor):
                 att_comp = cv2.countNonZero(att_mask)
                 def_comp = cv2.countNonZero(def_mask)
 
-                # fig = plt.figure(figsize=(5, 5))
-                # fig.add_subplot(1, 3, 1)
-                # plt.imshow(cv2.cvtColor(instance, cv2.COLOR_BGR2RGB))
-                # plt.title('OG')
-                # fig.add_subplot(1, 3, 2)
-                # plt.imshow(att_mask)
-                # plt.title('AMask')
-                # fig.add_subplot(1, 3, 3)
-                # plt.imshow(def_mask)
-                # plt.title('DMask')
-                # plt.show()
+                # if res:
+                #     try:
+                #         os.mkdir(results_folder + '\\' + name)
+                #     except:
+                #         print('Directory already exists')
+                #
+                #     try:
+                #         os.mkdir(results_folder + '\\' + name + '\\person_team')
+                #     except:
+                #         print('Directory already exists')
+                #     numpy_horizontal_concat = np.concatenate((instance, cv2.cvtColor(att_mask, cv2.COLOR_GRAY2BGR), cv2.cvtColor(def_mask, cv2.COLOR_GRAY2BGR)), axis=1)
+                #     cv2.imwrite(results_folder + '\\' + name + '\\person_team' + '\\' + 'team.jpg', numpy_horizontal_concat)
+                #     first = False
 
                 (h, w, _) = instance.shape
 
@@ -233,26 +243,28 @@ def person_detection_team_classification(name, attColor, defColor):
                 f.close()
 
             # now, extract *only* the masked region of the ROI by passing in the boolean mask array as our slice condition
-            # roi = roi[mask]
-            #
-            # # Red will be used to visualize this particular instance segmentation
-            # # then create a transparent overlay by blending the randomly selected color with the ROI
-            # blended = ((0.4 * RED_COLOR) + (0.6 * roi)).astype("uint8")
-            #
-            # # store the blended ROI in the original image
-            # image[startY:endY, startX:endX][mask] = blended
+            try:
+                roi = roi[mask]
+                #
+                # # Red will be used to visualize this particular instance segmentation
+                # # then create a transparent overlay by blending the randomly selected color with the ROI
+                blended = ((0.4 * np.array([255, 0, 0])) + (0.6 * roi)).astype("uint8")
+                #
+                # # store the blended ROI in the original image
+                image[startY:endY, startX:endX][mask] = blended
 
-            # draw the bounding box of the instance on the image
-            # cv2.rectangle(image, (startX, startY), (endX, endY), (255,255,255), 2)
+                # draw the bounding box of the instance on the image
+                cv2.rectangle(image, (startX, startY), (endX, endY), (255, 255, 255), 2)
 
-            # draw the predicted label and associated probability of the instance segmentation on the image
-            # text = "{}: {:.4f}".format("Person", confidence)
-            # cv2.putText(image, text, (startX, startY - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 2)
+                # draw the predicted label and associated probability of the instance segmentation on the image
+                text = "{}: {:.4f}".format("Person", confidence)
+                cv2.putText(image, text, (startX, startY - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
 
-            # show the output image
-            # cv2.imshow("Output", image)
-            # cv2.waitKey(0)
+                # show the output image
+                # cv2.imshow("Output", image)
+                # cv2.waitKey(0)
+            except:
+                pass
 
-    # cv2.imshow('out', image)
-    # cv2.waitKey(0)
-    # cv2.imwrite("output/result.jpg", image)
+        if resFlag:
+            cv2.imwrite(output_path + '\\' + 'detected.jpg', image)

@@ -1,18 +1,23 @@
 import glob
-from constants import  *
+import os
+
+from constants import *
 from collections import defaultdict
 
 import numpy as np
 import cv2
+
 
 def angle(line):
     x1, y1, x2, y2 = line[0]
     angle = np.arctan2(y2 - y1, x2 - x1)
     return angle % (2 * np.pi)
 
+
 def get_mean_angle(lines):
     angles = [angle(line) % np.pi for line in lines]
     return np.mean(angles, axis=0)
+
 
 def segment_by_angle_kmeans(lines, k=2, **kwargs):
     default_criteria_type = cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER
@@ -37,7 +42,8 @@ def segment_by_angle_kmeans(lines, k=2, **kwargs):
     segmented = list(segmented.values())
     return segmented
 
-def find_side(frame_path):
+
+def find_side(frame_path, res=False):
     images_path = glob.glob(processing_folder + '\\' + frame_path + "\*.jpg")
     side = 'left'
     for im_path in images_path[:1]:
@@ -62,10 +68,6 @@ def find_side(frame_path):
 
         lines = cv2.HoughLinesP(edges, rho, theta, threshold, np.array([]), min_line_length, max_line_gap)
 
-        for line in lines:
-            for x1, y1, x2, y2 in line:
-                cv2.line(line_image, (x1, y1), (x2, y2), (255, 255, 0), 5)
-
         segmented = segment_by_angle_kmeans(lines)
         if len(segmented[0]) > len(segmented[1]):
             angle_perp = get_mean_angle(segmented[1])
@@ -78,4 +80,28 @@ def find_side(frame_path):
             side = 'left'
         else:
             side = 'right'
+
+        if res:
+            for line in segmented[0]:
+                for x1, y1, x2, y2 in line:
+                    cv2.line(line_image, (x1, y1), (x2, y2), (255, 255, 0), 5)
+
+            for line in segmented[1]:
+                for x1, y1, x2, y2 in line:
+                    cv2.line(line_image, (x1, y1), (x2, y2), (0, 255, 0), 5)
+
+            try:
+                os.mkdir(results_folder + '\\' + frame_path)
+            except:
+                print('Directory already exists')
+
+            try:
+                os.mkdir(results_folder + '\\' + frame_path + '\\side')
+            except:
+                print('Directory already exists')
+
+            cv2.imwrite(results_folder + '\\' + frame_path + '\\side' + '\\side.jpg', line_image)
+            f = open(results_folder + '\\' + frame_path + '\\side\\side.txt', "w")
+            f.write(side)
+            f.close()
         return side

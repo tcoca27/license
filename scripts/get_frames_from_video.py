@@ -2,11 +2,18 @@ import cv2
 import os
 from constants import *
 
-def get_frames_from_video(name, delta_t):
+
+def get_frames_from_video(name, delta_t, res=False):
     video_path = videos_folder + "\\" + name + ".mp4"
     path_to_save = processing_folder + "\\" + name
+    path_to_save_res = results_folder + "\\" + name + '\\frames'
     try:
         os.mkdir(path_to_save)
+    except:
+        print('Directory already exists')
+
+    try:
+        os.mkdir(path_to_save_res)
     except:
         print('Directory already exists')
 
@@ -19,7 +26,10 @@ def get_frames_from_video(name, delta_t):
         if ret == False:
             break
         if i % save_frame == 0:
-            cv2.imwrite(path_to_save + '/' + video_path.split('\\')[-1][:-4] + str(i).zfill(3) + '.jpg', frame)
+            if res:
+                cv2.imwrite(path_to_save_res + '/' + video_path.split('\\')[-1][:-4] + str(i).zfill(3) + '.jpg', frame)
+            else:
+                cv2.imwrite(path_to_save + '/' + video_path.split('\\')[-1][:-4] + str(i).zfill(3) + '.jpg', frame)
         i += 1
 
     cap.release()

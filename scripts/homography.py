@@ -4,6 +4,8 @@ import os
 import random
 import string
 
+import matplotlib.pyplot as plt
+
 from constants import *
 
 import cv2
@@ -160,6 +162,15 @@ def hung_alg(attack, defence, hoop_pos):
 
 
 def homography(frame_path, side):
+    try:
+        os.mkdir(results_folder + '\\' + frame_path)
+    except:
+        print('Directory already exists')
+
+    try:
+        os.mkdir(results_folder + '\\' + frame_path + '\\homography')
+    except:
+        print('Directory already exists')
     prev_att = {}
     prev_def = {}
     lu, ru, rd, ld = 0, 0, 0, 0
@@ -352,6 +363,10 @@ def homography(frame_path, side):
                 final_td = twod_c2.copy()
                 res.append([final_td, im_name, pts_src])
                 max_dist = max_d
+                final_td_c = final_td.copy()
+                cv2.imwrite(results_folder + '\\' + frame_path + '\\homography' + '\\' + 'result.jpg', final_td_c)
+                cv2.circle(final_td_c, (pos[1], pos[0]), radius=1, color=(0, 255, 0), thickness=10)
+                cv2.imwrite(results_folder + '\\' + frame_path + '\\homography' + '\\' + 'homography.jpg', final_td_c)
                 # plt.imshow(cv2.cvtColor(final_td, cv2.COLOR_BGR2RGB))
                 # plt.title('Detected')
                 # plt.show()
