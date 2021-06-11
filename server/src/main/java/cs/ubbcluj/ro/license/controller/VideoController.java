@@ -11,6 +11,7 @@ import cs.ubbcluj.ro.license.payload.response.VideoResponse;
 import cs.ubbcluj.ro.license.service.ScriptsService;
 import cs.ubbcluj.ro.license.service.VideoStorageService;
 import cs.ubbcluj.ro.license.utils.JwtAccessor;
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,6 +24,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -96,7 +100,8 @@ public class VideoController {
       try {
         File file = new File(result.getStoredPath());
         byte[] encoded = Base64.encodeBase64(FileUtils.readFileToByteArray(file));
-        String image = String.format("data:image/jpg;base64,%s", new String(encoded, StandardCharsets.US_ASCII));
+        String image = String
+            .format("data:image/jpg;base64,%s", new String(encoded, StandardCharsets.US_ASCII));
         resultsResponses.add(ResultsResponse.builder().image(image).build());
       } catch (IOException e) {
         e.printStackTrace();
@@ -137,22 +142,22 @@ public class VideoController {
             video.getSize(), video.getUsername())).collect(Collectors.toList());
   }
 
-  @GetMapping(value = "/{id}/paint", produces = "video/mp4")
+  @GetMapping(value = "/{id}/paint", produces = "application/zip")
   @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-  public ResponseEntity paintSegmentation(@PathVariable Long id)
+  public void paintSegmentation(@PathVariable Long id, HttpServletResponse response)
       throws IOException, InterruptedException {
     Video video = videoStorageService.getVideo(id);
-    scriptsService.paintSegmentation(video.getFileName());
-    return new ResponseEntity(HttpStatus.OK);
+    zipDirectory(scriptsService.paintSegmentation(video.getFileName()), response, "paint.zip");
   }
 
-  @GetMapping(value = "/{id}/persons", produces = "video/mp4")
+  @GetMapping(value = "/{id}/persons", produces = "application/zip")
   @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-  public ResponseEntity personsDetection(@PathVariable Long id)
+  public void personsDetection(@PathVariable Long id, HttpServletResponse response)
       throws IOException, InterruptedException {
     Video video = videoStorageService.getVideo(id);
-    scriptsService.personDetection(video.getFileName(), video.getAttColor(), video.getDefColor());
-    return new ResponseEntity(HttpStatus.OK);
+    zipDirectory(scriptsService
+            .personDetection(video.getFileName(), video.getAttColor(), video.getDefColor()), response,
+        "teams.zip");
   }
 
   @GetMapping(value = "/{id}/side", produces = "video/mp4")
@@ -163,14 +168,34 @@ public class VideoController {
     return scriptsService.findSide(video.getFileName()).strip();
   }
 
-  private void readAndWrite(final InputStream is, OutputStream os)
+  private void zipDirectory(String path, HttpServletResponse response, String name)
       throws IOException {
-    byte[] data = new byte[2048];
-    int read = 0;
-    while ((read = is.read(data)) > 0) {
-      os.write(data, 0, read);
+    response.setStatus(HttpServletResponse.SC_OK);
+    response.addHeader("Content-Disposition", "attachment; filename=\"" + name + "\"");
+    ZipOutputStream zipOutputStream = new ZipOutputStream(response.getOutputStream());
+    File folder = new File(path.replace("\"", ""));
+    addToZos(folder, zipOutputStream, folder.getName());
+    zipOutputStream.close();
+  }
+
+  private void addToZos(File folder, ZipOutputStream zos, String parentFolder) throws IOException {
+    for (File file : folder.listFiles()) {
+      if (file.isDirectory()) {
+        addToZos(file, zos, parentFolder + "/" + file.getName());
+        continue;
+      }
+      zos.putNextEntry(new ZipEntry(parentFolder + "/" + file.getName()));
+      BufferedInputStream bis = new BufferedInputStream(
+          new FileInputStream(file));
+      long bytesRead = 0;
+      byte[] bytesIn = new byte[4096];
+      int read = 0;
+      while ((read = bis.read(bytesIn)) != -1) {
+        zos.write(bytesIn, 0, read);
+        bytesRead += read;
+      }
+      zos.closeEntry();
     }
-    os.flush();
   }
 
 

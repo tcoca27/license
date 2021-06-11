@@ -46,6 +46,9 @@ public class ScriptsService {
   }
 
   public String findSide(String name) throws IOException, InterruptedException {
+    if(!splitFrames(name)) {
+      throw new RuntimeException("Video could not be split");
+    }
     HttpRequest request = HttpRequest.newBuilder(
         URI.create(scriptsApi.concat(String.format("side?name=%s",
             name))))
@@ -56,11 +59,10 @@ public class ScriptsService {
     return response.body();
   }
 
-  public void paintSegmentation(String name)
+  public String paintSegmentation(String name)
       throws IOException, InterruptedException {
-    boolean frames = splitFrames(name);
     String side = findSide(name);
-    if (frames && (side.contains("right") || side.contains("left"))) {
+    if ((side.contains("right") || side.contains("left"))) {
       HttpRequest request = HttpRequest.newBuilder(
           URI.create(
               scriptsApi.concat(String.format("paint?name=%s&side=%s",
@@ -70,14 +72,13 @@ public class ScriptsService {
 
       HttpResponse<String> response = httpClient.send(request, BodyHandlers.ofString());
 
-      String path = response.body().strip();
-      System.out.println(path);
+      return response.body().strip();
 
     }
     throw new RuntimeException("Paint Segmentation ran into errors");
   }
 
-  public void personDetection(String name, ColorEnum attColor, ColorEnum defColor)
+  public String personDetection(String name, ColorEnum attColor, ColorEnum defColor)
       throws IOException, InterruptedException {
     if (splitFrames(name)) {
       HttpRequest request = HttpRequest.newBuilder(
@@ -90,8 +91,7 @@ public class ScriptsService {
 
       HttpResponse<String> response = httpClient.send(request, BodyHandlers.ofString());
 
-      String path = response.body();
-      System.out.println(path);
+      return response.body().strip();
 
     }
     throw new RuntimeException("Person Detection ran into errors");

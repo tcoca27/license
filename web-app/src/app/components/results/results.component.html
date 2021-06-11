@@ -6,7 +6,8 @@
       *ngFor="let file of fileInfos | async; let i=index"
     >
       <li class="list-group-item">
-        <a href="javascript:;" (click)="showVideo(file.id)"> Play {{i + 1}} uploaded on {{file.createdDate | date: 'short'}} </a>
+        <a href="javascript:;" (click)="showVideo(file.id)"> Play {{i + 1}} uploaded
+          on {{file.createdDate | date: 'short'}} </a>
       </li>
     </ul>
   </div>
@@ -22,26 +23,32 @@
       <source [src]="videoSource" type="video/mp4">
     </video>
 
-    <button
-      class="float-right btn btn-success"
-      (click)="paintSegmentation(videoDetail.id)"
-    >
-      Paint Segmentation Results
-    </button>
+    <div class="form-item-space">
+      <button
+        class="float-right btn btn-success fixed-button"
+        (click)="paintSegmentation(videoDetail.id)"
+      >
+        Paint Segmentation Results
+      </button>
 
-    <button
-      class="float-right btn btn-success"
-      (click)="personDetection(videoDetail.id)"
-    >
-      Teams Detection Result
-    </button>
+      <button
+        class="float-right btn btn-success fixed-button"
+        (click)="personDetection(videoDetail.id)"
+      >
+        Teams Detection Result
+      </button>
+    </div>
 
-    <button
-      class="float-right btn btn-success"
-      (click)="findSide(videoDetail.id)"
-    >
-      Find Side
-    </button>
+    <div class="form-item-space">
+      <button
+        class="float-right btn btn-success fixed-button"
+        (click)="findSide(videoDetail.id)"
+      >
+        Find Side
+      </button>
+
+      <p *ngIf="side" class="mt-5 fixed-width">Play takes place on the {{side}} side.</p>
+    </div>
   </div>
   <div *ngIf="videoDetail && results && results.length" class="card center">
     <header>Best Options</header>
@@ -49,4 +56,6 @@
       <img class="float-right" [src]="imgPath" style="max-width: 100%"/>
     </div>
   </div>
+
+  <ngx-spinner bdColor = "rgba(0, 0, 0, 0.8)" size = "medium" color = "#fff" [fullScreen] = "true"><p style="color: white" > Preparing Files. Please Wait... </p></ngx-spinner>
 </div>

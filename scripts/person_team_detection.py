@@ -113,14 +113,20 @@ def person_detection_team_classification(name, attColor, defColor, resFlag=False
     images_path = glob.glob(processing_folder + '\\' + name + "\*.jpg")
     if resFlag:
         res_pth = results_folder + '\\' + name + '\\teams'
-        os.mkdir(res_pth)
+        try:
+            os.mkdir(res_pth)
+        except:
+            pass
         images_path = glob.glob(results_folder + '\\' + name + '\\frames' + "\*.jpg")
     court_color = None
     for img_path in images_path:
         output_path = img_path[:-4]
         if resFlag:
             output_path = results_folder + '\\' + name + '\\teams\\' + img_path.split('\\')[-1][:-4]
-        os.mkdir(output_path)
+        try:
+            os.mkdir(output_path)
+        except:
+            pass
         image = cv2.imread(img_path, cv2.IMREAD_UNCHANGED)
         (H, W) = image.shape[:2]
         # print("[INFO] image size: {}x{} pixels".format(W, H))

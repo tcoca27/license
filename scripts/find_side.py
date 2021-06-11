@@ -45,6 +45,8 @@ def segment_by_angle_kmeans(lines, k=2, **kwargs):
 
 def find_side(frame_path, res=False):
     images_path = glob.glob(processing_folder + '\\' + frame_path + "\*.jpg")
+    if res:
+        images_path = glob.glob(results_folder + '\\' + frame_path + '\\frames' + "\*.jpg")
     side = 'left'
     for im_path in images_path[:1]:
         img = cv2.imread(im_path)
@@ -105,3 +107,4 @@ def find_side(frame_path, res=False):
             f.write(side)
             f.close()
         return side
+

@@ -3,6 +3,9 @@ import { Observable } from 'rxjs';
 import { UserService } from '../../services/user.service';
 import { VideosService } from '../../services/videos.service';
 import { DomSanitizer } from '@angular/platform-browser';
+import { HttpHeaders } from '@angular/common/http';
+import { saveAs } from 'file-saver';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-results',
@@ -10,6 +13,9 @@ import { DomSanitizer } from '@angular/platform-browser';
   styleUrls: ['./results.component.scss']
 })
 export class ResultsComponent implements OnInit {
+
+  constructor(private userService: UserService, private videosService: VideosService, private domSanitizer: DomSanitizer, private spinner: NgxSpinnerService) {
+  }
 
   public fileInfos: Observable<any>;
 
@@ -21,11 +27,24 @@ export class ResultsComponent implements OnInit {
 
   public imagePath = null;
 
-  constructor(private userService: UserService, private videosService: VideosService, private domSanitizer: DomSanitizer) {
+  public side = '';
+
+  private static fileNameFromHeaders(headers: HttpHeaders, defaultFileName?: string): string {
+    const contentDisposition = headers.get('Content-Disposition');
+    if (contentDisposition) {
+      const match = contentDisposition.match(/filename="?([^;"]+)"?/);
+      if (match && match[1]) {
+        return match[1];
+      }
+    }
+
+    return defaultFileName;
   }
 
   ngOnInit(): void {
     this.fileInfos = this.videosService.getMyVideos();
+    this.spinner.show();
+    this.spinner.hide();
   }
 
   public showVideo(id: number): void {
@@ -57,9 +76,12 @@ export class ResultsComponent implements OnInit {
   }
 
   public paintSegmentation(id: number): void {
+    this.spinner.show();
     this.videosService.paintSegmentation(id).subscribe(
       (response: any) => {
-        console.log(response);
+        const filename = ResultsComponent.fileNameFromHeaders(response.headers, 'paint.zip');
+        saveAs(response.body, filename);
+        this.spinner.hide();
       }, error => {
         console.log(error);
       }
@@ -67,9 +89,12 @@ export class ResultsComponent implements OnInit {
   }
 
   public personDetection(id: number): void {
+    this.spinner.show();
     this.videosService.personsDetection(id).subscribe(
       (response: any) => {
-        console.log(response);
+        const filename = ResultsComponent.fileNameFromHeaders(response.headers, 'teams.zip');
+        saveAs(response.body, filename);
+        this.spinner.hide();
       }, error => {
         console.log(error);
       }
@@ -79,10 +104,12 @@ export class ResultsComponent implements OnInit {
   public findSide(id: number): void {
     this.videosService.findSide(id).subscribe(
       (response: any) => {
-        console.log(response);
+        this.side = response;
       }, error => {
         console.log(error);
       }
     );
   }
+
+
 }

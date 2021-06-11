@@ -69,11 +69,17 @@ export class VideosService {
   }
 
   public paintSegmentation(id: number): Observable<any> {
-    return this.http.get(ENDPOINT.VIDEOS_API.PAINT(id));
+    const headers = new HttpHeaders({
+      Accept: 'application/zip, */*'
+    });
+    return this.http.get(ENDPOINT.VIDEOS_API.PAINT(id), { responseType: 'blob', observe: 'response', headers });
   }
 
   public personsDetection(id: number): Observable<any> {
-    return this.http.get(ENDPOINT.VIDEOS_API.PERSONS(id));
+    const headers = new HttpHeaders({
+      Accept: 'application/zip, */*'
+    });
+    return this.http.get(ENDPOINT.VIDEOS_API.PERSONS(id), { responseType: 'blob', observe: 'response', headers });
   }
 
   public findSide(id: number): Observable<any> {

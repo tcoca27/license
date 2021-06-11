@@ -20,7 +20,9 @@
     "@angular/platform-browser-dynamic": "~10.1.4",
     "@angular/router": "~10.1.4",
     "@progress/kendo-drawing": "^1.9.4",
+    "file-saver": "^2.0.5",
     "ngx-color-picker": "^11.0.0",
+    "ngx-spinner": "^9.0.1",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.2"
