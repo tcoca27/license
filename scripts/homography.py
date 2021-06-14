@@ -293,8 +293,10 @@ def homography(frame_path, side):
                 for name in added_from_prev:
                     if points_are_close(att, get_player_pos(res_att, name), 15):
                         continue
-                if len(res_att) < 5:
+                if 5 > len(res_att) > 0:
                     res_att[np.max(list(res_att)) + 1] = [att, 0, 1]
+                else:
+                    res_att[0] = [att, 0, 1]
 
             prev_att = res_att
 
@@ -351,7 +353,10 @@ def homography(frame_path, side):
             for dif in new_def_pos:
                 cv2.circle(twod_c2, (dif[1], dif[0]), radius=1, color=(0, 0, 255), thickness=10)
 
-            best_att, max_d = hung_alg(res_att, res_def, hoop_pos)
+            try:
+                best_att, max_d = hung_alg(res_att, res_def, hoop_pos)
+            except:
+                continue
 
             if best_att is None or max_d is None:
                 continue

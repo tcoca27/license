@@ -136,10 +136,13 @@ def paint_segmentation(frame_path, side, res=False):
                 print('Directory already exists')
             cv2.imwrite(results_folder + '\\' + frame_path + '\\paint\\' + im_path.split('\\')[-1][:-4] + "_mask.jpg",
                         np.float32(mask) * 255)
-            cv2.circle(im, (int(left_up[1]), int(left_up[0])), radius=0, color=(0, 255, 0), thickness=10)
-            cv2.circle(im, (int(right_up[1]), int(right_up[0])), radius=0, color=(0, 255, 0), thickness=10)
-            cv2.circle(im, (int(right_down[1]), int(right_down[0])), radius=0, color=(0, 255, 0), thickness=10)
-            cv2.circle(im, (int(left_down[1]), int(left_down[0])), radius=0, color=(0, 255, 0), thickness=10)
+            try:
+                cv2.circle(im, (int(left_up[1]), int(left_up[0])), radius=0, color=(0, 255, 0), thickness=10)
+                cv2.circle(im, (int(right_up[1]), int(right_up[0])), radius=0, color=(0, 255, 0), thickness=10)
+                cv2.circle(im, (int(right_down[1]), int(right_down[0])), radius=0, color=(0, 255, 0), thickness=10)
+                cv2.circle(im, (int(left_down[1]), int(left_down[0])), radius=0, color=(0, 255, 0), thickness=10)
+            except:
+                pass
             cv2.imwrite(results_folder + '\\' + frame_path + '\\paint\\' + im_path.split('\\')[-1][:-4] + '_paint.jpg',
                         im)
             f = open(results_folder + '\\' + frame_path + '\\paint\\' + im_path.split('\\')[-1][:-4] + "_paint.txt",

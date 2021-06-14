@@ -3,6 +3,8 @@ import glob
 import numpy as np
 import time
 import os
+import matplotlib.pyplot as plt
+
 
 from sklearn.cluster import KMeans
 from constants import *
@@ -142,9 +144,7 @@ def person_detection_team_classification(name, attColor, defColor, resFlag=False
         blob = cv2.dnn.blobFromImage(image, swapRB=True, crop=False)
         net.setInput(blob)
 
-        start = time.time()
         (boxes, masks) = net.forward(["detection_out_final", "detection_masks"])
-        end = time.time()
 
         # show timing information and volume information on Mask R-CNN
         # print("[INFO] Mask R-CNN took {:.6f} seconds".format(end - start))
@@ -249,28 +249,31 @@ def person_detection_team_classification(name, attColor, defColor, resFlag=False
                 f.close()
 
             # now, extract *only* the masked region of the ROI by passing in the boolean mask array as our slice condition
-            try:
-                roi = roi[mask]
-                #
-                # # Red will be used to visualize this particular instance segmentation
-                # # then create a transparent overlay by blending the randomly selected color with the ROI
-                blended = ((0.4 * np.array([255, 0, 0])) + (0.6 * roi)).astype("uint8")
-                #
-                # # store the blended ROI in the original image
-                image[startY:endY, startX:endX][mask] = blended
+            if resFlag:
+                try:
+                    roi = roi[mask]
+                    #
+                    # # Red will be used to visualize this particular instance segmentation
+                    # # then create a transparent overlay by blending the randomly selected color with the ROI
+                    blended = ((0.4 * np.array([255, 0, 0])) + (0.6 * roi)).astype("uint8")
+                    #
+                    # # store the blended ROI in the original image
+                    image[startY:endY, startX:endX][mask] = blended
 
-                # draw the bounding box of the instance on the image
-                cv2.rectangle(image, (startX, startY), (endX, endY), (255, 255, 255), 2)
+                    # draw the bounding box of the instance on the image
+                    cv2.rectangle(image, (startX, startY), (endX, endY), (255, 255, 255), 2)
 
-                # draw the predicted label and associated probability of the instance segmentation on the image
-                text = "{}: {:.4f}".format("Person", confidence)
-                cv2.putText(image, text, (startX, startY - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+                    # draw the predicted label and associated probability of the instance segmentation on the image
+                    text = "{}: {:.4f}".format("Person", confidence)
+                    cv2.putText(image, text, (startX, startY - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
 
-                # show the output image
-                # cv2.imshow("Output", image)
-                # cv2.waitKey(0)
-            except:
-                pass
+                    # show the output image
+                    # cv2.imshow("Output", image)
+                    # cv2.waitKey(0)
+                except:
+                    pass
 
         if resFlag:
             cv2.imwrite(output_path + '\\' + 'detected.jpg', image)
+
+person_detection_team_classification('xO4OsX1Fov', 'red', 'black')

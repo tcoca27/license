@@ -1,6 +1,8 @@
 package cs.ubbcluj.ro.license.service;
 
 import cs.ubbcluj.ro.license.model.ColorEnum;
+import cs.ubbcluj.ro.license.model.Result;
+import cs.ubbcluj.ro.license.repository.ResultsRepository;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -9,11 +11,16 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ScriptsService {
+
+  @Autowired
+  private ResultsRepository resultsRepository;
 
   private final HttpClient httpClient = HttpClient.newHttpClient();
 
@@ -46,6 +53,10 @@ public class ScriptsService {
   }
 
   public String findSide(String name) throws IOException, InterruptedException {
+    Optional<Result> result = resultsRepository.findByVideoNameAndStoredPathIsNull(name);
+    if (result.isPresent() && result.get().getSide() != null) {
+      return result.get().getSide();
+    }
     if(!splitFrames(name)) {
       throw new RuntimeException("Video could not be split");
     }
@@ -56,11 +67,18 @@ public class ScriptsService {
         .build();
 
     HttpResponse<String> response = httpClient.send(request, BodyHandlers.ofString());
-    return response.body();
+    String side = response.body().strip();
+    result.ifPresent(value -> value.setSide(side));
+    resultsRepository.save(result.orElse(Result.builder().videoName(name).side(side).build()));
+    return side;
   }
 
   public String paintSegmentation(String name)
       throws IOException, InterruptedException {
+    Optional<Result> result = resultsRepository.findByVideoNameAndStoredPathIsNull(name);
+    if (result.isPresent() && result.get().getPaintPath() != null) {
+      return result.get().getPaintPath();
+    }
     String side = findSide(name);
     if ((side.contains("right") || side.contains("left"))) {
       HttpRequest request = HttpRequest.newBuilder(
@@ -72,7 +90,10 @@ public class ScriptsService {
 
       HttpResponse<String> response = httpClient.send(request, BodyHandlers.ofString());
 
-      return response.body().strip();
+      String path = response.body().strip();
+      result.ifPresent(value -> value.setPaintPath(path));
+      resultsRepository.save(result.orElse(Result.builder().videoName(name).paintPath(path).build()));
+      return path;
 
     }
     throw new RuntimeException("Paint Segmentation ran into errors");
@@ -80,6 +101,10 @@ public class ScriptsService {
 
   public String personDetection(String name, ColorEnum attColor, ColorEnum defColor)
       throws IOException, InterruptedException {
+    Optional<Result> result = resultsRepository.findByVideoNameAndStoredPathIsNull(name);
+    if (result.isPresent() && result.get().getPersonsPath() != null) {
+      return result.get().getPersonsPath();
+    }
     if (splitFrames(name)) {
       HttpRequest request = HttpRequest.newBuilder(
           URI.create(
@@ -91,7 +116,10 @@ public class ScriptsService {
 
       HttpResponse<String> response = httpClient.send(request, BodyHandlers.ofString());
 
-      return response.body().strip();
+      String path = response.body().strip();
+      result.ifPresent(value -> value.setPersonsPath(path));
+      resultsRepository.save(result.orElse(Result.builder().videoName(name).personsPath(path).build()));
+      return path;
 
     }
     throw new RuntimeException("Person Detection ran into errors");
