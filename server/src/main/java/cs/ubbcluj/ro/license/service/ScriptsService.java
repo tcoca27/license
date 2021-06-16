@@ -80,6 +80,7 @@ public class ScriptsService {
       return result.get().getPaintPath();
     }
     String side = findSide(name);
+    result = resultsRepository.findByVideoNameAndStoredPathIsNull(name);
     if ((side.contains("right") || side.contains("left"))) {
       HttpRequest request = HttpRequest.newBuilder(
           URI.create(

@@ -102,9 +102,11 @@ export class ResultsComponent implements OnInit {
   }
 
   public findSide(id: number): void {
+    this.spinner.show();
     this.videosService.findSide(id).subscribe(
       (response: any) => {
         this.side = response;
+        this.spinner.hide();
       }, error => {
         console.log(error);
       }

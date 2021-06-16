@@ -264,7 +264,7 @@ def person_detection_team_classification(name, attColor, defColor, resFlag=False
                     cv2.rectangle(image, (startX, startY), (endX, endY), (255, 255, 255), 2)
 
                     # draw the predicted label and associated probability of the instance segmentation on the image
-                    text = "{}: {:.4f}".format("Person", confidence)
+                    text = "{}: {:.4f}".format("Detected Person", confidence)
                     cv2.putText(image, text, (startX, startY - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
 
                     # show the output image
@@ -275,5 +275,3 @@ def person_detection_team_classification(name, attColor, defColor, resFlag=False
 
         if resFlag:
             cv2.imwrite(output_path + '\\' + 'detected.jpg', image)
-
-person_detection_team_classification('xO4OsX1Fov', 'red', 'black')

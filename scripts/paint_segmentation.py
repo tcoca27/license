@@ -108,13 +108,20 @@ predictor = DefaultPredictor(cfg)
 
 
 def paint_segmentation(frame_path, side, res=False):
+    toWrite = None
     images_path = glob.glob(processing_folder + '\\' + frame_path + "\*.jpg")
     if res:
         images_path = glob.glob(results_folder + '\\' + frame_path + '\\frames' + "\*.jpg")
     for im_path in images_path:
         im = cv2.imread(im_path)
         outputs = predictor(im)
-        y1, x1, y2, x2 = outputs['instances'].pred_boxes.tensor[0]
+        try:
+            y1, x1, y2, x2 = outputs['instances'].pred_boxes.tensor[0]
+        except:
+            f = open(im_path[:-4] + "_paint.txt", "w")
+            f.write(toWrite)
+            f.close()
+            continue
         mask = outputs['instances'].pred_masks[0]
 
         if side == 'right':
